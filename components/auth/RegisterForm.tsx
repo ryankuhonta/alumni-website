@@ -34,8 +34,18 @@ export default function RegisterForm() {
     }
 
     if (data.user) {
-      console.log('Auth signup successful, user ID:', data.user.id)
-      
+      if (!data.session) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        })
+        if (signInError) {
+          setError('Account created but login failed. Please check your email to confirm, then log in.')
+          setLoading(false)
+          return
+        }
+      }
+
       const { error: profileError } = await supabase.from('users').insert({
         id: data.user.id,
         email,
