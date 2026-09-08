@@ -117,7 +117,8 @@ alter table alumni_v2.organization_info enable row level security;
 
 -- RLS Policies
 
--- Users: readable by authenticated, writable by self/admin
+-- Users: readable by authenticated, writable by self
+-- NOTE: No self-referencing admin policy (causes infinite recursion)
 create policy "Users can view approved users"
   on alumni_v2.users for select
   to authenticated
@@ -132,16 +133,6 @@ create policy "Users can update own profile"
   on alumni_v2.users for update
   to authenticated
   using (id = auth.uid());
-
-create policy "Admins can do everything on users"
-  on alumni_v2.users for all
-  to authenticated
-  using (
-    exists (
-      select 1 from alumni_v2.users
-      where id = auth.uid() and role = 'admin'
-    )
-  );
 
 -- Events: readable by authenticated, writable by admin
 create policy "Authenticated can view events"
