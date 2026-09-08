@@ -39,7 +39,7 @@ export default async function AboutPage() {
         {orgInfo?.about && (
           <div className="mb-16">
             <h2 className="text-2xl font-bold text-center mb-6">About Us</h2>
-            <div className="bg-white p-8 rounded-lg border">
+            <div className="bg-green-50 p-8 rounded-lg">
               {orgInfo.about.split('\n').map((paragraph: string, i: number) => (
                 <p key={i} className="text-gray-700 mb-4 last:mb-0">
                   {paragraph}
