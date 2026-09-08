@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@/types/database'
 
@@ -19,9 +19,52 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
   const [privacyLocation, setPrivacyLocation] = useState(
     profile.privacy_location
   )
+  const [profilePicture, setProfilePicture] = useState(
+    profile.profile_picture || ''
+  )
+  const [uploading, setUploading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Image must be 2MB or smaller.')
+      return
+    }
+
+    setUploading(true)
+    setError(null)
+    const supabase = createClient()
+
+    const fileExt = file.name.split('.').pop()
+    const filePath = `${profile.id}/avatar.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file, { upsert: true })
+
+    if (uploadError) {
+      setError('Failed to upload image.')
+      setUploading(false)
+      return
+    }
+
+    const { data } = supabase.storage.from('avatars').getPublicUrl(filePath)
+
+    await supabase
+      .from('users')
+      .update({ profile_picture: data.publicUrl })
+      .eq('id', profile.id)
+
+    setProfilePicture(data.publicUrl)
+    setUploading(false)
+    setSuccess(true)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -51,6 +94,8 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
     setLoading(false)
   }
 
+  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {success && (
@@ -61,6 +106,59 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
       {error && (
         <div className="bg-red-100 text-red-700 p-3 rounded">{error}</div>
       )}
+
+      <div className="bg-white shadow rounded-lg p-6">
+        <h2 className="text-xl font-bold mb-4">Profile Picture</h2>
+
+        <div className="flex items-center space-x-6">
+          <div className="relative group">
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+              {profilePicture ? (
+                <img
+                  src={profilePicture}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-2xl font-bold text-gray-400">
+                  {initials}
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="absolute inset-0 rounded-full bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+            >
+              <span className="text-white text-sm">
+                {uploading ? 'Uploading...' : 'Change'}
+              </span>
+            </button>
+          </div>
+
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="text-green-700 hover:underline disabled:opacity-50"
+            >
+              {uploading ? 'Uploading...' : 'Upload new photo'}
+            </button>
+            <p className="text-sm text-gray-500 mt-1">
+              JPG or PNG, max 2MB
+            </p>
+          </div>
+        </div>
+      </div>
 
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-xl font-bold mb-4">Personal Information</h2>
