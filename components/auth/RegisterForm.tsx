@@ -34,6 +34,8 @@ export default function RegisterForm() {
     }
 
     if (data.user) {
+      console.log('Auth signup successful, user ID:', data.user.id)
+      
       const { error: profileError } = await supabase.from('users').insert({
         id: data.user.id,
         email,
@@ -47,7 +49,8 @@ export default function RegisterForm() {
       })
 
       if (profileError) {
-        setError('Failed to create profile. Please try again.')
+        console.error('Profile insert error:', profileError)
+        setError(`Failed to create profile: ${profileError.message}`)
         setLoading(false)
         return
       }

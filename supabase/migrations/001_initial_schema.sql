@@ -123,6 +123,11 @@ create policy "Users can view approved users"
   to authenticated
   using (status = 'approved' or id = auth.uid());
 
+create policy "Users can insert own profile"
+  on alumni_v2.users for insert
+  to authenticated
+  with check (id = auth.uid());
+
 create policy "Users can update own profile"
   on alumni_v2.users for update
   to authenticated
