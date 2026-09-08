@@ -4,16 +4,18 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     const supabase = createClient()
-    const getUser = async () => {
+
+    const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
 
@@ -24,14 +26,38 @@ export default function Navbar() {
           .eq('id', user.id)
           .single()
         setIsAdmin(data?.role === 'admin')
+      } else {
+        setIsAdmin(false)
       }
     }
-    getUser()
-  }, [])
+
+    fetchUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setUser(session?.user ?? null)
+
+        if (session?.user) {
+          const { data } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', session.user.id)
+            .single()
+          setIsAdmin(data?.role === 'admin')
+        } else {
+          setIsAdmin(false)
+        }
+      }
+    )
+
+    return () => subscription.unsubscribe()
+  }, [pathname])
 
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
+    setUser(null)
+    setIsAdmin(false)
     router.push('/')
   }
 
