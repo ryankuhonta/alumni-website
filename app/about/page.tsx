@@ -10,7 +10,7 @@ export default async function AboutPage() {
 
   const { data: officers } = await supabase
     .from('officers')
-    .select('*')
+    .select('*, users!officers_user_id_fkey(profile_picture)')
     .order('display_order', { ascending: true })
 
   return (
@@ -56,9 +56,9 @@ export default async function AboutPage() {
             {officers.map((officer) => (
               <div key={officer.id} className="text-center">
                 <div className="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden">
-                  {officer.photo_url ? (
+                  {(officer as any).photo_url || (officer as any).users?.profile_picture ? (
                     <img
-                      src={officer.photo_url}
+                      src={(officer as any).photo_url || (officer as any).users?.profile_picture}
                       alt={officer.name}
                       className="w-full h-full object-cover"
                     />
