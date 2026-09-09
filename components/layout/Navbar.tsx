@@ -98,7 +98,7 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link href="/dashboard" className="hover:underline">
-                  Dashboard
+                  Profile
                 </Link>
                 {isAdmin && (
                   <Link href="/admin" className="hover:underline">
