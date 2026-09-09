@@ -29,6 +29,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
   const [showHero, setShowHero] = useState(initialData?.show_logo_hero ?? true)
   const [showFooter, setShowFooter] = useState(initialData?.show_logo_footer ?? true)
   const [showAbout, setShowAbout] = useState(initialData?.show_logo_about ?? true)
+  const [showAlumniAbout, setShowAlumniAbout] = useState(initialData?.show_alumni_logo_about ?? true)
 
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -91,6 +92,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
       show_logo_hero: showHero,
       show_logo_footer: showFooter,
       show_logo_about: showAbout,
+      show_alumni_logo_about: showAlumniAbout,
     }
 
     if (initialData?.id) {
@@ -152,6 +154,10 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={showHero} onChange={(e) => setShowHero(e.target.checked)} className="rounded" />
             <span className="text-sm">Homepage hero section</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={showAlumniAbout} onChange={(e) => setShowAlumniAbout(e.target.checked)} className="rounded" />
+            <span className="text-sm">About page</span>
           </label>
         </div>
       </div>

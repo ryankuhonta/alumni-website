@@ -99,5 +99,6 @@ export interface OrganizationInfo {
   show_logo_hero?: boolean
   show_logo_footer?: boolean
   show_logo_about?: boolean
+  show_alumni_logo_about?: boolean
   updated_at: string
 }

@@ -25,15 +25,24 @@ export default async function AboutPage() {
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-center mb-12">About Us</h1>
 
-        {orgInfo?.show_logo_about && orgInfo?.school_logo_url && (
-          <div className="text-center mb-12">
-            <img
-              src={orgInfo.school_logo_url}
-              alt="Liceo de San Pedro Logo"
-              className="h-40 mx-auto object-contain"
-            />
+        {(orgInfo?.show_logo_about && orgInfo?.school_logo_url) || (orgInfo?.show_alumni_logo_about && orgInfo?.logo_url) ? (
+          <div className="flex items-center justify-center gap-8 mb-12">
+            {orgInfo?.show_alumni_logo_about && orgInfo?.logo_url && (
+              <img
+                src={orgInfo.logo_url}
+                alt="LDSP Alumni Logo"
+                className="h-40 object-contain"
+              />
+            )}
+            {orgInfo?.show_logo_about && orgInfo?.school_logo_url && (
+              <img
+                src={orgInfo.school_logo_url}
+                alt="Liceo de San Pedro Logo"
+                className="h-40 object-contain"
+              />
+            )}
           </div>
-        )}
+        ) : null}
 
         {/* Mission & Vision */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
