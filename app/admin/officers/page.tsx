@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Officer } from '@/types/database'
 import OfficerForm from '@/components/admin/OfficerForm'
+import { logActivity } from '@/lib/activity-log'
 
 export default function AdminOfficersPage() {
   const [officers, setOfficers] = useState<Officer[]>([])
@@ -25,8 +26,23 @@ export default function AdminOfficersPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this officer?')) return
-    await supabase.from('officers').delete().eq('id', id)
-    fetchOfficers()
+    const officer = officers.find(o => o.id === id)
+    const { error } = await supabase.from('officers').delete().eq('id', id)
+    if (error) {
+      console.error('Error deleting officer:', error)
+      alert('Failed to delete officer: ' + error.message)
+    } else {
+      if (officer) {
+        await logActivity({
+          action: 'officer.delete',
+          targetType: 'officer',
+          targetId: id,
+          targetName: `${officer.name} - ${officer.position}`,
+          details: { before: { name: officer.name, position: officer.position } }
+        })
+      }
+      fetchOfficers()
+    }
   }
 
   const handleSave = () => {

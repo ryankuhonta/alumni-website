@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Officer, User } from '@/types/database'
+import { logActivity } from '@/lib/activity-log'
 
 interface OfficerFormProps {
   officer?: Officer | null
@@ -45,19 +46,51 @@ export default function OfficerForm({ officer, onSave, onCancel }: OfficerFormPr
     e.preventDefault()
     setLoading(true)
 
+    let error = null
+    let insertedId = null
+
     if (officer?.id) {
-      await supabase
+      const { error: updateError } = await supabase
         .from('officers')
         .update({ name, position, term_year: termYear || null, display_order: displayOrder, user_id: userId || null })
         .eq('id', officer.id)
+      error = updateError
     } else {
-      await supabase.from('officers').insert({
+      const { data: insertData, error: insertError } = await supabase.from('officers').insert({
         name,
         position,
         term_year: termYear || null,
         display_order: displayOrder,
         user_id: userId || null,
-      })
+      }).select('id').single()
+      error = insertError
+      insertedId = insertData?.id
+    }
+
+    if (error) {
+      console.error('Error saving officer:', error)
+      alert('Failed to save officer: ' + error.message)
+    } else {
+      if (officer?.id) {
+        await logActivity({
+          action: 'officer.update',
+          targetType: 'officer',
+          targetId: officer.id,
+          targetName: `${name} - ${position}`,
+          details: {
+            before: { name: officer.name, position: officer.position },
+            after: { name, position }
+          }
+        })
+      } else {
+        await logActivity({
+          action: 'officer.create',
+          targetType: 'officer',
+          targetId: insertedId,
+          targetName: `${name} - ${position}`,
+          details: { after: { name, position, term_year: termYear } }
+        })
+      }
     }
 
     setLoading(false)
