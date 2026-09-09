@@ -32,7 +32,7 @@ export default async function AnnouncementsPage() {
                   {new Date(announcement.created_at).toLocaleDateString()}
                 </div>
                 <h2 className="text-xl font-bold mb-2">{announcement.title}</h2>
-                <p className="text-gray-700">{announcement.content}</p>
+                <p className="text-gray-700 whitespace-pre-wrap">{announcement.content}</p>
                 {announcement.cover_image && (
                   <img
                     src={announcement.cover_image}

@@ -120,7 +120,7 @@ export default async function HomePage() {
                     {new Date(announcement.created_at).toLocaleDateString()}
                   </div>
                   <h3 className="text-xl font-bold mt-2">{announcement.title}</h3>
-                  <p className="text-gray-600 mt-2 line-clamp-3">
+                  <p className="text-gray-600 mt-2 line-clamp-3 whitespace-pre-wrap">
                     {announcement.content}
                   </p>
                 </div>
