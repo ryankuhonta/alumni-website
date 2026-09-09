@@ -18,7 +18,7 @@ export default function AnnouncementList({ announcements }: AnnouncementListProp
   const router = useRouter()
 
   const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`Burahin ang announcement na "${title}"?`)) return
+    if (!confirm(`Delete announcement "${title}"?`)) return
 
     setDeleting(id)
     const supabase = createClient()
@@ -54,7 +54,7 @@ export default function AnnouncementList({ announcements }: AnnouncementListProp
               disabled={deleting === announcement.id}
               className="text-red-600 hover:text-red-800 disabled:opacity-50"
             >
-              {deleting === announcement.id ? 'Binabura...' : '🗑️ Burahin'}
+              {deleting === announcement.id ? 'Deleting...' : '🗑️ Delete'}
             </button>
           </div>
         </div>
