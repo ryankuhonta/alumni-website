@@ -26,7 +26,7 @@ export default function AdminSidebar() {
             href={link.href}
             className={`block px-4 py-2 rounded ${
               pathname === link.href
-                ? 'bg-blue-700'
+                ? 'bg-[#0d1b2a]'
                 : 'hover:bg-gray-700'
             }`}
           >

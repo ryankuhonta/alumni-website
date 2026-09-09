@@ -26,7 +26,7 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-blue-700 text-white py-20">
+      <section className="bg-[#0d1b2a] text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
           {orgInfo?.show_logo_hero && orgInfo?.logo_url && (
             <img
@@ -50,7 +50,7 @@ export default async function HomePage() {
             </Link>
             <Link
               href="/directory"
-              className="border border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800"
+              className="border border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/10"
             >
               Browse Directory
             </Link>

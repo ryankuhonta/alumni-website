@@ -38,13 +38,13 @@ export default async function AboutPage() {
         {/* Mission & Vision */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           <div className="bg-blue-50 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-blue-700 mb-4">Mission</h2>
+            <h2 className="text-2xl font-bold text-[#0d1b2a] mb-4">Mission</h2>
             <p className="text-gray-700">
               {orgInfo?.mission || 'To be updated.'}
             </p>
           </div>
           <div className="bg-blue-50 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-blue-700 mb-4">Vision</h2>
+            <h2 className="text-2xl font-bold text-[#0d1b2a] mb-4">Vision</h2>
             <p className="text-gray-700">
               {orgInfo?.vision || 'To be updated.'}
             </p>
@@ -88,7 +88,7 @@ export default async function AboutPage() {
                     )}
                   </div>
                   <h3 className="font-bold">{officer.name}</h3>
-                  <p className="text-blue-700 text-sm">{officer.position}</p>
+                  <p className="text-[#0d1b2a] text-sm">{officer.position}</p>
                   {officer.term_year && (
                     <p className="text-gray-500 text-xs">{officer.term_year}</p>
                   )}
