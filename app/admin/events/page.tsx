@@ -35,7 +35,7 @@ export default async function AdminEventsPage() {
                 </div>
                 <Link
                   href={`/admin/events/${event.id}`}
-                  className="text-green-700 hover:underline"
+                  className="text-blue-700 hover:underline"
                 >
                   Edit
                 </Link>

@@ -41,7 +41,7 @@ export default function AdminOfficersPage() {
         <h1 className="text-2xl font-bold">Manage Officers</h1>
         <button
           onClick={() => { setEditingOfficer(null); setShowForm(true) }}
-          className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
+          className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800"
         >
           + Add Officer
         </button>
@@ -71,7 +71,7 @@ export default function AdminOfficersPage() {
               <div className="space-x-2">
                 <button
                   onClick={() => { setEditingOfficer(officer); setShowForm(true) }}
-                  className="text-green-700 hover:underline"
+                  className="text-blue-700 hover:underline"
                 >
                   Edit
                 </button>

@@ -99,7 +99,7 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {success && (
-        <div className="bg-green-100 text-green-700 p-3 rounded">
+        <div className="bg-blue-100 text-blue-700 p-3 rounded">
           Profile updated successfully!
         </div>
       )}
@@ -149,7 +149,7 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="text-green-700 hover:underline disabled:opacity-50"
+              className="text-blue-700 hover:underline disabled:opacity-50"
             >
               {uploading ? 'Uploading...' : 'Upload new photo'}
             </button>
@@ -251,7 +251,7 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-green-700 text-white py-2 rounded hover:bg-green-800 disabled:opacity-50"
+        className="w-full bg-blue-700 text-white py-2 rounded hover:bg-blue-800 disabled:opacity-50"
       >
         {loading ? 'Saving...' : 'Save Changes'}
       </button>

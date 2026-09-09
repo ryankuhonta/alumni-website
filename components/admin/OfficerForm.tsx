@@ -133,7 +133,7 @@ export default function OfficerForm({ officer, onSave, onCancel }: OfficerFormPr
         <button
           type="submit"
           disabled={loading}
-          className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 disabled:opacity-50"
+          className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 disabled:opacity-50"
         >
           {loading ? 'Saving...' : 'Save'}
         </button>

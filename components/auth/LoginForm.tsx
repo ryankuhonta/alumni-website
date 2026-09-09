@@ -63,13 +63,13 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-green-700 text-white py-2 rounded hover:bg-green-800 disabled:opacity-50"
+        className="w-full bg-blue-700 text-white py-2 rounded hover:bg-blue-800 disabled:opacity-50"
       >
         {loading ? 'Logging in...' : 'Login'}
       </button>
 
       <p className="text-center text-sm">
-        <a href="/forgot-password" className="text-green-700 hover:underline">
+        <a href="/forgot-password" className="text-blue-700 hover:underline">
           Forgot password?
         </a>
       </p>

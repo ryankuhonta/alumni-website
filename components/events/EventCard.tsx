@@ -19,7 +19,7 @@ export default function EventCard({ event }: EventCardProps) {
         />
       )}
       <div className="p-6">
-        <div className="text-green-700 font-semibold">
+        <div className="text-blue-700 font-semibold">
           {new Date(event.event_date).toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',

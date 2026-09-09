@@ -20,11 +20,11 @@ export default async function AnnouncementsPage() {
               <div
                 key={announcement.id}
                 className={`border rounded-lg p-6 ${
-                  announcement.is_pinned ? 'border-green-500 bg-green-50' : ''
+                  announcement.is_pinned ? 'border-blue-500 bg-blue-50' : ''
                 }`}
               >
                 {announcement.is_pinned && (
-                  <span className="text-green-700 text-sm font-semibold">
+                  <span className="text-blue-700 text-sm font-semibold">
                     📌 Pinned
                   </span>
                 )}

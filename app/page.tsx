@@ -26,7 +26,7 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-green-700 text-white py-20">
+      <section className="bg-blue-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
           {orgInfo?.logo_url ? (
             <img
@@ -38,19 +38,19 @@ export default async function HomePage() {
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             LDSP Alumni Association
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-green-100">
+          <p className="text-xl md:text-2xl mb-8 text-blue-100">
             Connecting Lasallian alumni for a lifetime
           </p>
           <div className="space-x-4">
             <Link
               href="/register"
-              className="bg-white text-green-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100"
+              className="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100"
             >
               Join Now
             </Link>
             <Link
               href="/directory"
-              className="border border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-800"
+              className="border border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800"
             >
               Browse Directory
             </Link>
@@ -70,7 +70,7 @@ export default async function HomePage() {
                   href={`/events/${event.id}`}
                   className="border rounded-lg p-6 hover:shadow-lg transition"
                 >
-                  <div className="text-green-700 font-semibold">
+                  <div className="text-blue-700 font-semibold">
                     {new Date(event.event_date).toLocaleDateString()}
                   </div>
                   <h3 className="text-xl font-bold mt-2">{event.title}</h3>
@@ -88,7 +88,7 @@ export default async function HomePage() {
           ) : (
             <p className="text-gray-500">No upcoming events yet.</p>
           )}
-          <Link href="/events" className="text-green-700 hover:underline mt-4 inline-block">
+          <Link href="/events" className="text-blue-700 hover:underline mt-4 inline-block">
             View all events →
           </Link>
         </div>
@@ -118,7 +118,7 @@ export default async function HomePage() {
           ) : (
             <p className="text-gray-500">No announcements yet.</p>
           )}
-          <Link href="/announcements" className="text-green-700 hover:underline mt-4 inline-block">
+          <Link href="/announcements" className="text-blue-700 hover:underline mt-4 inline-block">
             View all announcements →
           </Link>
         </div>
@@ -133,7 +133,7 @@ export default async function HomePage() {
           </p>
           <Link
             href="/jobs"
-            className="bg-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-800"
+            className="bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800"
           >
             Browse Jobs
           </Link>

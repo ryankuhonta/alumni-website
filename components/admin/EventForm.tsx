@@ -128,7 +128,7 @@ export default function EventForm({ initialData }: EventFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800 disabled:opacity-50"
+        className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800 disabled:opacity-50"
       >
         {loading ? 'Saving...' : initialData?.id ? 'Update Event' : 'Create Event'}
       </button>

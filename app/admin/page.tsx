@@ -13,7 +13,7 @@ export default async function AdminDashboardPage() {
 
   const stats = [
     { label: 'Total Alumni', value: usersCount || 0, color: 'bg-blue-500' },
-    { label: 'Events', value: eventsCount || 0, color: 'bg-green-500' },
+    { label: 'Events', value: eventsCount || 0, color: 'bg-blue-500' },
     { label: 'Job Posts', value: jobsCount || 0, color: 'bg-yellow-500' },
     { label: 'Announcements', value: announcementsCount || 0, color: 'bg-purple-500' },
   ]

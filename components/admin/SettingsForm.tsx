@@ -84,7 +84,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
       {success && (
-        <div className="bg-green-100 text-green-700 p-3 rounded">
+        <div className="bg-blue-100 text-blue-700 p-3 rounded">
           Settings saved successfully!
         </div>
       )}
@@ -165,7 +165,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800 disabled:opacity-50"
+        className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800 disabled:opacity-50"
       >
         {loading ? 'Saving...' : 'Save Settings'}
       </button>

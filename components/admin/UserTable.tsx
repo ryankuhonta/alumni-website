@@ -31,7 +31,7 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
   }
 
   const statusColors = {
-    approved: 'bg-green-100 text-green-800',
+    approved: 'bg-blue-100 text-blue-800',
     pending: 'bg-yellow-100 text-yellow-800',
     rejected: 'bg-red-100 text-red-800',
     banned: 'bg-gray-100 text-gray-800',
@@ -71,7 +71,7 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
                   <button
                     onClick={() => updateStatus(user.id, 'approved')}
                     disabled={loading === user.id}
-                    className="text-green-600 hover:underline"
+                    className="text-blue-600 hover:underline"
                   >
                     Approve
                   </button>

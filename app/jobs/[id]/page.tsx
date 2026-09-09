@@ -33,7 +33,7 @@ export default async function JobDetailPage({
           <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold">{job.title}</h1>
-              <p className="text-xl text-green-700 mt-2">{job.company}</p>
+              <p className="text-xl text-blue-700 mt-2">{job.company}</p>
               {job.location && (
                 <p className="text-gray-500 mt-1">📍 {job.location}</p>
               )}
@@ -63,7 +63,7 @@ export default async function JobDetailPage({
                   href={job.application_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800"
+                  className="inline-block bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800"
                 >
                   Apply Now
                 </a>
@@ -73,7 +73,7 @@ export default async function JobDetailPage({
                   Or send your application to:{' '}
                   <a
                     href={`mailto:${job.application_email}`}
-                    className="text-green-700 hover:underline"
+                    className="text-blue-700 hover:underline"
                   >
                     {job.application_email}
                   </a>

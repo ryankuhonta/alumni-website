@@ -29,7 +29,7 @@ export default function AlumniCard({ user }: AlumniCardProps) {
           <h3 className="font-bold">
             {user.first_name} {user.last_name}
           </h3>
-          <p className="text-green-700 text-sm">Batch {user.batch_year}</p>
+          <p className="text-blue-700 text-sm">Batch {user.batch_year}</p>
           {user.course && (
             <p className="text-gray-500 text-sm">{user.course}</p>
           )}

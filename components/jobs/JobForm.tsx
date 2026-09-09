@@ -158,7 +158,7 @@ export default function JobForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-green-700 text-white py-2 rounded hover:bg-green-800 disabled:opacity-50"
+        className="w-full bg-blue-700 text-white py-2 rounded hover:bg-blue-800 disabled:opacity-50"
       >
         {loading ? 'Posting...' : 'Post Job'}
       </button>

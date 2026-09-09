@@ -73,7 +73,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-green-700 text-white">
+    <nav className="bg-blue-700 text-white">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
@@ -112,7 +112,7 @@ export default function Navbar() {
                 <Link href="/login" className="hover:underline">
                   Login
                 </Link>
-                <Link href="/register" className="bg-white text-green-700 px-4 py-2 rounded hover:bg-gray-100">
+                <Link href="/register" className="bg-white text-blue-700 px-4 py-2 rounded hover:bg-gray-100">
                   Register
                 </Link>
               </>
