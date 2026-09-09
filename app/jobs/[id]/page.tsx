@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 export default async function JobDetailPage({
   params,
@@ -8,6 +8,9 @@ export default async function JobDetailPage({
 }) {
   const { id } = await params
   const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
   const { data: job } = await supabase
     .from('jobs')
@@ -33,9 +36,9 @@ export default async function JobDetailPage({
           <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold">{job.title}</h1>
-              <p className="text-xl text-blue-700 mt-2">{job.company}</p>
+              <p className="text-xl mt-2" style={{ color: 'var(--primary-color)' }}>{job.company}</p>
               {job.location && (
-                <p className="text-gray-500 mt-1">📍 {job.location}</p>
+                <p className="text-gray-500 mt-1">{job.location}</p>
               )}
             </div>
             <span className="bg-gray-100 text-gray-700 px-4 py-2 rounded">
@@ -63,7 +66,8 @@ export default async function JobDetailPage({
                   href={job.application_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800"
+                  className="inline-block text-white px-6 py-2 rounded hover:opacity-90"
+                  style={{ backgroundColor: 'var(--primary-color)' }}
                 >
                   Apply Now
                 </a>
@@ -73,7 +77,8 @@ export default async function JobDetailPage({
                   Or send your application to:{' '}
                   <a
                     href={`mailto:${job.application_email}`}
-                    className="text-blue-700 hover:underline"
+                    className="hover:underline"
+                    style={{ color: 'var(--primary-color)' }}
                   >
                     {job.application_email}
                   </a>

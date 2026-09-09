@@ -1,7 +1,11 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 
-export default async function Footer() {
+interface FooterProps {
+  siteName: string
+}
+
+export default async function Footer({ siteName }: FooterProps) {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
@@ -17,14 +21,14 @@ export default async function Footer() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-bold mb-4">LDSP Alumni Association</h3>
+            <h3 className="font-bold mb-4">{siteName}</h3>
             <p className="text-gray-400 text-sm">
               Connecting Lasallian alumni for a lifetime.
             </p>
             {orgInfo?.show_logo_footer && orgInfo?.school_logo_url && (
               <img
                 src={orgInfo.school_logo_url}
-                alt="Liceo de San Pedro Logo"
+                alt="School Logo"
                 className="h-24 mt-4 object-contain"
               />
             )}
@@ -35,7 +39,7 @@ export default async function Footer() {
               <li><Link href="/about" className="hover:text-white">About Us</Link></li>
               {user && <li><Link href="/directory" className="hover:text-white">Directory</Link></li>}
               <li><Link href="/events" className="hover:text-white">Events</Link></li>
-              <li><Link href="/jobs" className="hover:text-white">Job Board</Link></li>
+              {user && <li><Link href="/jobs" className="hover:text-white">Job Board</Link></li>}
             </ul>
           </div>
           <div>
@@ -48,7 +52,7 @@ export default async function Footer() {
           </div>
         </div>
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
-          © {new Date().getFullYear()} LDSP Alumni Association. All rights reserved.
+          &copy; {new Date().getFullYear()} {siteName}. All rights reserved.
         </div>
       </div>
     </footer>

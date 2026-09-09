@@ -6,7 +6,11 @@ import { useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useRouter, usePathname } from 'next/navigation'
 
-export default function Navbar() {
+interface NavbarProps {
+  siteName: string
+}
+
+export default function Navbar({ siteName }: NavbarProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [logoUrl, setLogoUrl] = useState('')
@@ -75,14 +79,14 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-blue-800 text-white">
+    <nav style={{ backgroundColor: 'var(--primary-color)' }} className="text-white">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             {showLogo && logoUrl ? (
-              <img src={logoUrl} alt="LDSP Alumni Logo" className="h-10 w-auto" />
+              <img src={logoUrl} alt="Logo" className="h-10 w-auto" />
             ) : (
-              <span className="text-xl font-bold">LDSP Alumni</span>
+              <span className="text-xl font-bold">{siteName}</span>
             )}
           </Link>
 
@@ -91,7 +95,7 @@ export default function Navbar() {
             {user && <Link href="/directory">Directory</Link>}
             <Link href="/events">Events</Link>
             <Link href="/announcements">Announcements</Link>
-            <Link href="/jobs">Jobs</Link>
+            {user && <Link href="/jobs">Jobs</Link>}
           </div>
 
           <div className="flex items-center space-x-4">
@@ -114,7 +118,7 @@ export default function Navbar() {
                 <Link href="/login" className="hover:underline">
                   Login
                 </Link>
-                <Link href="/register" className="bg-white text-blue-800 px-4 py-2 rounded hover:bg-gray-100">
+                <Link href="/register" className="bg-white px-4 py-2 rounded hover:bg-gray-100" style={{ color: 'var(--primary-color)' }}>
                   Register
                 </Link>
               </>

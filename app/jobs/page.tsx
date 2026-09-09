@@ -1,9 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import JobCard from '@/components/jobs/JobCard'
 import Link from 'next/link'
 
 export default async function JobsPage() {
   const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
   const { data: jobs } = await supabase
     .from('jobs')
@@ -18,7 +22,8 @@ export default async function JobsPage() {
           <h1 className="text-3xl font-bold">Job Board</h1>
           <Link
             href="/jobs/new"
-            className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800"
+            className="text-white px-4 py-2 rounded hover:opacity-90"
+            style={{ backgroundColor: 'var(--primary-color)' }}
           >
             Post a Job
           </Link>

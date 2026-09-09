@@ -31,6 +31,21 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
   const [showAbout, setShowAbout] = useState(initialData?.show_logo_about ?? true)
   const [showAlumniAbout, setShowAlumniAbout] = useState(initialData?.show_alumni_logo_about ?? true)
 
+  const [siteName, setSiteName] = useState(initialData?.site_name || 'LDSP Alumni Association')
+  const [tagline, setTagline] = useState(initialData?.tagline || 'Connecting Lasallian alumni for a lifetime')
+  const [primaryColor, setPrimaryColor] = useState(initialData?.primary_color || '#1e40af')
+
+  const colorChoices = [
+    { label: 'Blue', value: '#1e40af' },
+    { label: 'Green', value: '#16a34a' },
+    { label: 'Red', value: '#dc2626' },
+    { label: 'Navy', value: '#1e3a5f' },
+    { label: 'Purple', value: '#9333ea' },
+    { label: 'Maroon', value: '#9d174d' },
+    { label: 'Orange', value: '#ea580c' },
+    { label: 'Teal', value: '#0d9488' },
+  ]
+
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -93,6 +108,9 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
       show_logo_footer: showFooter,
       show_logo_about: showAbout,
       show_alumni_logo_about: showAlumniAbout,
+      site_name: siteName,
+      tagline: tagline,
+      primary_color: primaryColor,
     }
 
     if (initialData?.id) {
@@ -205,6 +223,54 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
             <input type="checkbox" checked={showAbout} onChange={(e) => setShowAbout(e.target.checked)} className="rounded" />
             <span className="text-sm">About page</span>
           </label>
+        </div>
+      </div>
+
+      {/* Site Branding */}
+      <div className="border rounded-lg p-4">
+        <h3 className="font-bold mb-3">Site Branding</h3>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium mb-1">Site Name</label>
+            <input
+              type="text"
+              value={siteName}
+              onChange={(e) => setSiteName(e.target.value)}
+              className="w-full border rounded px-3 py-2"
+              placeholder="LDSP Alumni Association"
+            />
+            <p className="text-xs text-gray-500 mt-1">Shown in navbar, homepage, and footer</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Tagline</label>
+            <input
+              type="text"
+              value={tagline}
+              onChange={(e) => setTagline(e.target.value)}
+              className="w-full border rounded px-3 py-2"
+              placeholder="Connecting Lasallian alumni for a lifetime"
+            />
+            <p className="text-xs text-gray-500 mt-1">Shown below the title on homepage</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Primary Color</label>
+            <div className="flex items-center gap-3">
+              <select
+                value={primaryColor}
+                onChange={(e) => setPrimaryColor(e.target.value)}
+                className="border rounded px-3 py-2"
+              >
+                {colorChoices.map((c) => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+              <div
+                className="w-10 h-10 rounded border"
+                style={{ backgroundColor: primaryColor }}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Main theme color for buttons, navbar, and accents</p>
+          </div>
         </div>
       </div>
 

@@ -27,7 +27,7 @@ export default function ProfileView({ user }: ProfileViewProps) {
             <h1 className="text-2xl font-bold">
               {user.first_name} {user.last_name}
             </h1>
-            <p className="text-blue-700">Batch {user.batch_year}</p>
+            <p style={{ color: 'var(--primary-color)' }}>Batch {user.batch_year}</p>
             {user.course && <p className="text-gray-600">{user.course}</p>}
           </div>
         </div>

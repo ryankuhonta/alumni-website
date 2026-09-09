@@ -19,32 +19,36 @@ export default async function HomePage() {
 
   const { data: orgInfo } = await supabase
     .from('organization_info')
-    .select('logo_url, school_logo_url, show_logo_hero')
+    .select('logo_url, school_logo_url, show_logo_hero, site_name, tagline')
     .limit(1)
     .single()
+
+  const siteName = orgInfo?.site_name || 'LDSP Alumni Association'
+  const tagline = orgInfo?.tagline || 'Connecting Lasallian alumni for a lifetime'
 
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-blue-800 text-white py-20">
+      <section style={{ backgroundColor: 'var(--primary-color)' }} className="text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
           {orgInfo?.show_logo_hero && orgInfo?.logo_url && (
             <img
               src={orgInfo.logo_url}
-              alt="LDSP Alumni Logo"
+              alt="Logo"
               className="h-24 md:h-32 mx-auto mb-6 object-contain"
             />
           )}
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            LDSP Alumni Association
+            {siteName}
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-blue-100">
-            Connecting Lasallian alumni for a lifetime
+          <p className="text-xl md:text-2xl mb-8 opacity-90">
+            {tagline}
           </p>
           <div className="space-x-4">
             <Link
               href="/register"
-              className="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100"
+              className="bg-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-100"
+              style={{ color: 'var(--primary-color)' }}
             >
               Join Now
             </Link>
@@ -58,7 +62,7 @@ export default async function HomePage() {
           {orgInfo?.show_logo_hero && orgInfo?.school_logo_url && (
             <img
               src={orgInfo.school_logo_url}
-              alt="Liceo de San Pedro Logo"
+              alt="School Logo"
               className="h-24 md:h-32 mx-auto mt-8 object-contain"
             />
           )}
@@ -77,7 +81,7 @@ export default async function HomePage() {
                   href={`/events/${event.id}`}
                   className="border rounded-lg p-6 hover:shadow-lg transition"
                 >
-                  <div className="text-blue-700 font-semibold">
+                  <div style={{ color: 'var(--primary-color)' }} className="font-semibold">
                     {new Date(event.event_date).toLocaleDateString()}
                   </div>
                   <h3 className="text-xl font-bold mt-2">{event.title}</h3>
@@ -86,7 +90,7 @@ export default async function HomePage() {
                   </p>
                   {event.venue && (
                     <p className="text-gray-500 text-sm mt-2">
-                      📍 {event.venue}
+                      {event.venue}
                     </p>
                   )}
                 </Link>
@@ -95,8 +99,8 @@ export default async function HomePage() {
           ) : (
             <p className="text-gray-500">No upcoming events yet.</p>
           )}
-          <Link href="/events" className="text-blue-700 hover:underline mt-4 inline-block">
-            View all events →
+          <Link href="/events" className="hover:underline mt-4 inline-block" style={{ color: 'var(--primary-color)' }}>
+            View all events &rarr;
           </Link>
         </div>
       </section>
@@ -125,8 +129,8 @@ export default async function HomePage() {
           ) : (
             <p className="text-gray-500">No announcements yet.</p>
           )}
-          <Link href="/announcements" className="text-blue-700 hover:underline mt-4 inline-block">
-            View all announcements →
+          <Link href="/announcements" className="hover:underline mt-4 inline-block" style={{ color: 'var(--primary-color)' }}>
+            View all announcements &rarr;
           </Link>
         </div>
       </section>
@@ -140,7 +144,8 @@ export default async function HomePage() {
           </p>
           <Link
             href="/jobs"
-            className="bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800"
+            className="text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90"
+            style={{ backgroundColor: 'var(--primary-color)' }}
           >
             Browse Jobs
           </Link>

@@ -21,7 +21,7 @@ export default function JobCard({ job }: JobCardProps) {
       <div className="flex items-start justify-between">
         <div>
           <h3 className="text-xl font-bold">{job.title}</h3>
-          <p className="text-blue-700">{job.company}</p>
+          <p style={{ color: 'var(--primary-color)' }}>{job.company}</p>
           {job.location && (
             <p className="text-gray-500 text-sm">📍 {job.location}</p>
           )}

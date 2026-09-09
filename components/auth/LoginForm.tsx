@@ -87,13 +87,14 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-700 text-white py-2 rounded hover:bg-blue-800 disabled:opacity-50"
+        className="w-full text-white py-2 rounded disabled:opacity-50"
+        style={{ backgroundColor: 'var(--primary-color)' }}
       >
         {loading ? 'Logging in...' : 'Login'}
       </button>
 
       <p className="text-center text-sm">
-        <a href="/forgot-password" className="text-blue-700 hover:underline">
+        <a href="/forgot-password" className="hover:underline" style={{ color: 'var(--primary-color)' }}>
           Forgot password?
         </a>
       </p>

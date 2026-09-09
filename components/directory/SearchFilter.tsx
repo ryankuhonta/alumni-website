@@ -34,7 +34,8 @@ export default function SearchFilter() {
       />
       <button
         onClick={handleSearch}
-        className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800"
+        className="text-white px-6 py-2 rounded hover:opacity-90"
+        style={{ backgroundColor: 'var(--primary-color)' }}
       >
         Search
       </button>

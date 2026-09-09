@@ -10,7 +10,7 @@ export default function LoginPage() {
         <LoginForm />
         <p className="text-center mt-4 text-gray-600">
           Don&apos;t have an account?{' '}
-          <a href="/register" className="text-blue-700 hover:underline">
+          <a href="/register" className="hover:underline" style={{ color: 'var(--primary-color)' }}>
             Register here
           </a>
         </p>

@@ -24,7 +24,7 @@ export default async function AnnouncementsPage() {
                 }`}
               >
                 {announcement.is_pinned && (
-                  <span className="text-blue-700 text-sm font-semibold">
+                  <span className="text-sm font-semibold" style={{ color: 'var(--primary-color)' }}>
                     📌 Pinned
                   </span>
                 )}

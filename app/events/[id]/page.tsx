@@ -56,7 +56,7 @@ export default async function EventDetailPage({
 
         <h1 className="text-3xl font-bold mb-4">{event.title}</h1>
 
-        <div className="text-blue-700 font-semibold mb-4">
+        <div className="font-semibold mb-4" style={{ color: 'var(--primary-color)' }}>
           {new Date(event.event_date).toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
@@ -68,13 +68,14 @@ export default async function EventDetailPage({
 
         {event.venue && (
           <p className="text-gray-600 mb-4">
-            📍 {event.venue}
+            {event.venue}
             {event.map_url && (
               <a
                 href={event.map_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-700 hover:underline ml-2"
+                className="hover:underline ml-2"
+                style={{ color: 'var(--primary-color)' }}
               >
                 (View Map)
               </a>

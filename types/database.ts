@@ -100,5 +100,8 @@ export interface OrganizationInfo {
   show_logo_footer?: boolean
   show_logo_about?: boolean
   show_alumni_logo_about?: boolean
+  site_name?: string
+  tagline?: string
+  primary_color?: string
   updated_at: string
 }

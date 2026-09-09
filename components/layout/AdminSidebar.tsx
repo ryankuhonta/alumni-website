@@ -26,9 +26,10 @@ export default function AdminSidebar() {
             href={link.href}
             className={`block px-4 py-2 rounded ${
               pathname === link.href
-                ? 'bg-blue-800'
+                ? 'text-white'
                 : 'hover:bg-gray-700'
             }`}
+            style={pathname === link.href ? { backgroundColor: 'var(--primary-color)' } : undefined}
           >
             {link.label}
           </Link>

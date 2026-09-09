@@ -10,7 +10,7 @@ export default function RegisterPage() {
         <RegisterForm />
         <p className="text-center mt-4 text-gray-600">
           Already have an account?{' '}
-          <a href="/login" className="text-blue-700 hover:underline">
+          <a href="/login" className="hover:underline" style={{ color: 'var(--primary-color)' }}>
             Login here
           </a>
         </p>

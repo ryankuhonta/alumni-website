@@ -99,7 +99,7 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {success && (
-        <div className="bg-blue-100 text-blue-700 p-3 rounded">
+        <div className="p-3 rounded" style={{ backgroundColor: 'color-mix(in srgb, var(--primary-color) 10%, white)', color: 'var(--primary-color)' }}>
           Profile updated successfully!
         </div>
       )}
@@ -149,7 +149,8 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="text-blue-700 hover:underline disabled:opacity-50"
+              className="hover:underline disabled:opacity-50"
+              style={{ color: 'var(--primary-color)' }}
             >
               {uploading ? 'Uploading...' : 'Upload new photo'}
             </button>
@@ -251,7 +252,8 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-700 text-white py-2 rounded hover:bg-blue-800 disabled:opacity-50"
+        className="w-full text-white py-2 rounded disabled:opacity-50"
+        style={{ backgroundColor: 'var(--primary-color)' }}
       >
         {loading ? 'Saving...' : 'Save Changes'}
       </button>

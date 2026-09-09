@@ -52,9 +52,10 @@ export default function RSVPButton({
         disabled={loading}
         className={`px-4 py-2 rounded ${
           status === 'going'
-            ? 'bg-blue-600 text-white'
+            ? 'text-white'
             : 'bg-gray-200 hover:bg-gray-300'
         }`}
+        style={status === 'going' ? { backgroundColor: 'var(--primary-color)' } : undefined}
       >
         Going
       </button>
