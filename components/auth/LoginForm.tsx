@@ -28,6 +28,30 @@ export default function LoginForm() {
       return
     }
 
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from('users')
+        .select('status')
+        .eq('id', user.id)
+        .single()
+
+      if (profile?.status === 'rejected') {
+        await supabase.auth.signOut()
+        setError('Your account has been rejected. Please contact the admin.')
+        setLoading(false)
+        return
+      }
+
+      if (profile?.status === 'banned') {
+        await supabase.auth.signOut()
+        setError('Your account has been banned. Please contact the admin.')
+        setLoading(false)
+        return
+      }
+    }
+
     router.push('/directory')
     router.refresh()
   }
