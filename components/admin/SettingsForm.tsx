@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { OrganizationInfo } from '@/types/database'
+import { logActivity } from '@/lib/activity-log'
 
 interface SettingsFormProps {
   initialData: OrganizationInfo | null
@@ -113,13 +114,92 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
       primary_color: primaryColor,
     }
 
+    let error = null
+
     if (initialData?.id) {
-      await supabase
+      const { error: updateError } = await supabase
         .from('organization_info')
         .update(updateData)
         .eq('id', initialData.id)
+      error = updateError
     } else {
-      await supabase.from('organization_info').insert(updateData)
+      const { error: insertError } = await supabase.from('organization_info').insert(updateData)
+      error = insertError
+    }
+
+    if (error) {
+      console.error('Error saving settings:', error)
+      alert('Failed to save settings: ' + error.message)
+    } else {
+      if (initialData?.id) {
+        const changes: Record<string, any> = {}
+        const before: Record<string, any> = {}
+
+        if (siteName !== initialData.site_name) {
+          before.site_name = initialData.site_name
+          changes.site_name = siteName
+        }
+        if (tagline !== initialData.tagline) {
+          before.tagline = initialData.tagline
+          changes.tagline = tagline
+        }
+        if (primaryColor !== initialData.primary_color) {
+          before.primary_color = initialData.primary_color
+          changes.primary_color = primaryColor
+        }
+        if (mission !== initialData.mission) {
+          before.mission = initialData.mission
+          changes.mission = mission
+        }
+        if (vision !== initialData.vision) {
+          before.vision = initialData.vision
+          changes.vision = vision
+        }
+        if (about !== initialData.about) {
+          before.about = initialData.about
+          changes.about = about
+        }
+        if (logoUrl !== initialData.logo_url) {
+          before.logo_url = initialData.logo_url
+          changes.logo_url = logoUrl
+        }
+        if (schoolLogoUrl !== initialData.school_logo_url) {
+          before.school_logo_url = initialData.school_logo_url
+          changes.school_logo_url = schoolLogoUrl
+        }
+        if (showNavbar !== initialData.show_logo_navbar) {
+          before.show_logo_navbar = initialData.show_logo_navbar
+          changes.show_logo_navbar = showNavbar
+        }
+        if (showHero !== initialData.show_logo_hero) {
+          before.show_logo_hero = initialData.show_logo_hero
+          changes.show_logo_hero = showHero
+        }
+        if (showFooter !== initialData.show_logo_footer) {
+          before.show_logo_footer = initialData.show_logo_footer
+          changes.show_logo_footer = showFooter
+        }
+        if (showAbout !== initialData.show_logo_about) {
+          before.show_logo_about = initialData.show_logo_about
+          changes.show_logo_about = showAbout
+        }
+        if (showAlumniAbout !== initialData.show_alumni_logo_about) {
+          before.show_alumni_logo_about = initialData.show_alumni_logo_about
+          changes.show_alumni_logo_about = showAlumniAbout
+        }
+
+        if (Object.keys(changes).length > 0) {
+          await logActivity({
+            action: 'settings.update',
+            targetType: 'settings',
+            targetName: 'Organization Settings',
+            details: {
+              before: Object.keys(before).length > 0 ? before : undefined,
+              after: changes
+            }
+          })
+        }
+      }
     }
 
     setSuccess(true)
