@@ -191,6 +191,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
         }
 
         if (Object.keys(changes).length > 0) {
+          console.log('Settings changed, logging activity:', changes)
           await logActivity({
             action: 'settings.update',
             targetType: 'settings',
