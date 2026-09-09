@@ -16,11 +16,10 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
     setLoading(userId)
     const supabase = createClient()
 
-    const { data, error } = await supabase
-      .from('users')
-      .update({ status })
-      .eq('id', userId)
-      .select()
+    const { error } = await supabase.rpc('admin_update_user_status', {
+      target_user_id: userId,
+      new_status: status,
+    })
 
     if (error) {
       console.error('Error updating status:', error)
