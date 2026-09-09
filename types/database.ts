@@ -93,5 +93,6 @@ export interface OrganizationInfo {
   mission: string
   vision: string
   about?: string
+  logo_url?: string
   updated_at: string
 }

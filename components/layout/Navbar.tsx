@@ -9,6 +9,7 @@ import { useRouter, usePathname } from 'next/navigation'
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [logoUrl, setLogoUrl] = useState('')
   const router = useRouter()
   const pathname = usePathname()
 
@@ -31,7 +32,17 @@ export default function Navbar() {
       }
     }
 
+    const fetchLogo = async () => {
+      const { data } = await supabase
+        .from('organization_info')
+        .select('logo_url')
+        .limit(1)
+        .single()
+      if (data?.logo_url) setLogoUrl(data.logo_url)
+    }
+
     fetchUser()
+    fetchLogo()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -65,8 +76,12 @@ export default function Navbar() {
     <nav className="bg-green-700 text-white">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold">
-            LDSP Alumni
+          <Link href="/" className="flex items-center gap-2">
+            {logoUrl ? (
+              <img src={logoUrl} alt="LDSP Alumni Logo" className="h-10 w-auto" />
+            ) : (
+              <span className="text-xl font-bold">LDSP Alumni</span>
+            )}
           </Link>
 
           <div className="hidden md:flex items-center space-x-6">

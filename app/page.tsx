@@ -17,11 +17,24 @@ export default async function HomePage() {
     .order('created_at', { ascending: false })
     .limit(3)
 
+  const { data: orgInfo } = await supabase
+    .from('organization_info')
+    .select('logo_url')
+    .limit(1)
+    .single()
+
   return (
     <div>
       {/* Hero Section */}
       <section className="bg-green-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
+          {orgInfo?.logo_url ? (
+            <img
+              src={orgInfo.logo_url}
+              alt="LDSP Alumni Logo"
+              className="h-24 md:h-32 mx-auto mb-6 object-contain"
+            />
+          ) : null}
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             LDSP Alumni Association
           </h1>
