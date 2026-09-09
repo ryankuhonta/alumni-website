@@ -94,5 +94,10 @@ export interface OrganizationInfo {
   vision: string
   about?: string
   logo_url?: string
+  school_logo_url?: string
+  show_logo_navbar?: boolean
+  show_logo_hero?: boolean
+  show_logo_footer?: boolean
+  show_logo_about?: boolean
   updated_at: string
 }

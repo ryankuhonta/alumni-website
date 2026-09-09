@@ -1,6 +1,15 @@
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
 
-export default function Footer() {
+export default async function Footer() {
+  const supabase = await createClient()
+
+  const { data: orgInfo } = await supabase
+    .from('organization_info')
+    .select('school_logo_url, show_logo_footer')
+    .limit(1)
+    .single()
+
   return (
     <footer className="bg-gray-800 text-white py-8">
       <div className="max-w-7xl mx-auto px-4">
@@ -10,6 +19,13 @@ export default function Footer() {
             <p className="text-gray-400 text-sm">
               Connecting Lasallian alumni for a lifetime.
             </p>
+            {orgInfo?.show_logo_footer && orgInfo?.school_logo_url && (
+              <img
+                src={orgInfo.school_logo_url}
+                alt="Liceo de San Pedro Logo"
+                className="h-16 mt-4 object-contain"
+              />
+            )}
           </div>
           <div>
             <h3 className="font-bold mb-4">Quick Links</h3>

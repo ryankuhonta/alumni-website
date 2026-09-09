@@ -25,6 +25,16 @@ export default async function AboutPage() {
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-center mb-12">About Us</h1>
 
+        {orgInfo?.show_logo_about && orgInfo?.school_logo_url && (
+          <div className="text-center mb-12">
+            <img
+              src={orgInfo.school_logo_url}
+              alt="Liceo de San Pedro Logo"
+              className="h-32 mx-auto object-contain"
+            />
+          </div>
+        )}
+
         {/* Mission & Vision */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           <div className="bg-blue-50 p-8 rounded-lg">

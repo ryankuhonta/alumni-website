@@ -19,7 +19,7 @@ export default async function HomePage() {
 
   const { data: orgInfo } = await supabase
     .from('organization_info')
-    .select('logo_url')
+    .select('logo_url, school_logo_url, show_logo_hero')
     .limit(1)
     .single()
 
@@ -28,13 +28,13 @@ export default async function HomePage() {
       {/* Hero Section */}
       <section className="bg-blue-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          {orgInfo?.logo_url ? (
+          {orgInfo?.show_logo_hero && orgInfo?.logo_url && (
             <img
               src={orgInfo.logo_url}
               alt="LDSP Alumni Logo"
               className="h-24 md:h-32 mx-auto mb-6 object-contain"
             />
-          ) : null}
+          )}
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             LDSP Alumni Association
           </h1>
@@ -55,6 +55,13 @@ export default async function HomePage() {
               Browse Directory
             </Link>
           </div>
+          {orgInfo?.show_logo_hero && orgInfo?.school_logo_url && (
+            <img
+              src={orgInfo.school_logo_url}
+              alt="Liceo de San Pedro Logo"
+              className="h-16 md:h-20 mx-auto mt-8 object-contain"
+            />
+          )}
         </div>
       </section>
 

@@ -12,15 +12,28 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
   const [mission, setMission] = useState(initialData?.mission || '')
   const [vision, setVision] = useState(initialData?.vision || '')
   const [about, setAbout] = useState(initialData?.about || '')
+
   const [logoUrl, setLogoUrl] = useState(initialData?.logo_url || '')
   const [logoPreview, setLogoPreview] = useState(initialData?.logo_url || '')
-  const [success, setSuccess] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [logoError, setLogoError] = useState('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const logoInputRef = useRef<HTMLInputElement>(null)
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [schoolLogoUrl, setSchoolLogoUrl] = useState(initialData?.school_logo_url || '')
+  const [schoolLogoPreview, setSchoolLogoPreview] = useState(initialData?.school_logo_url || '')
+  const [uploadingSchoolLogo, setUploadingSchoolLogo] = useState(false)
+  const [schoolLogoError, setSchoolLogoError] = useState('')
+  const schoolLogoInputRef = useRef<HTMLInputElement>(null)
+
+  const [showNavbar, setShowNavbar] = useState(initialData?.show_logo_navbar ?? true)
+  const [showHero, setShowHero] = useState(initialData?.show_logo_hero ?? true)
+  const [showFooter, setShowFooter] = useState(initialData?.show_logo_footer ?? true)
+  const [showAbout, setShowAbout] = useState(initialData?.show_logo_about ?? true)
+
+  const [success, setSuccess] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'alumni' | 'school') => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -34,12 +47,17 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
       return
     }
 
-    setUploadingLogo(true)
-    setLogoError('')
+    const setUploading = type === 'alumni' ? setUploadingLogo : setUploadingSchoolLogo
+    const setError = type === 'alumni' ? setLogoError : setSchoolLogoError
+    const setUrl = type === 'alumni' ? setLogoUrl : setSchoolLogoUrl
+    const setPreview = type === 'alumni' ? setLogoPreview : setSchoolLogoPreview
+
+    setUploading(true)
+    setError('')
     const supabase = createClient()
 
     const fileExt = file.name.split('.').pop()
-    const fileName = `org-logo.${fileExt}`
+    const fileName = `${type}-logo.${fileExt}`
 
     const { error } = await supabase.storage
       .from('logos')
@@ -47,14 +65,14 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
 
     if (error) {
       console.error('Upload error:', error)
-      setLogoError(error.message)
+      setError(error.message)
     } else {
       const { data } = supabase.storage.from('logos').getPublicUrl(fileName)
-      setLogoUrl(data.publicUrl)
-      setLogoPreview(data.publicUrl)
+      setUrl(data.publicUrl)
+      setPreview(data.publicUrl)
     }
 
-    setUploadingLogo(false)
+    setUploading(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,18 +81,25 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
     setSuccess(false)
     const supabase = createClient()
 
+    const updateData = {
+      mission,
+      vision,
+      about,
+      logo_url: logoUrl,
+      school_logo_url: schoolLogoUrl,
+      show_logo_navbar: showNavbar,
+      show_logo_hero: showHero,
+      show_logo_footer: showFooter,
+      show_logo_about: showAbout,
+    }
+
     if (initialData?.id) {
       await supabase
         .from('organization_info')
-        .update({ mission, vision, about, logo_url: logoUrl })
+        .update(updateData)
         .eq('id', initialData.id)
     } else {
-      await supabase.from('organization_info').insert({
-        mission,
-        vision,
-        about,
-        logo_url: logoUrl,
-      })
+      await supabase.from('organization_info').insert(updateData)
     }
 
     setSuccess(true)
@@ -82,34 +107,31 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       {success && (
         <div className="bg-blue-100 text-blue-700 p-3 rounded">
           Settings saved successfully!
         </div>
       )}
 
-      <div>
-        <label className="block text-sm font-medium mb-1">Organization Logo</label>
+      {/* Alumni Logo */}
+      <div className="border rounded-lg p-4">
+        <h3 className="font-bold mb-3">Alumni Logo</h3>
         <div className="flex items-center gap-4">
           <div
             className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => logoInputRef.current?.click()}
           >
             {logoPreview ? (
-              <img
-                src={logoPreview}
-                alt="Logo preview"
-                className="w-full h-full object-contain rounded-lg"
-              />
+              <img src={logoPreview} alt="Alumni logo preview" className="w-full h-full object-contain rounded-lg" />
             ) : (
-              <span className="text-gray-400 text-2xl font-bold">Logo</span>
+              <span className="text-gray-400 text-sm">Logo</span>
             )}
           </div>
           <div>
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => logoInputRef.current?.click()}
               disabled={uploadingLogo}
               className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 disabled:opacity-50"
             >
@@ -119,15 +141,68 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
             {logoError && <p className="text-xs text-red-500 mt-1">{logoError}</p>}
           </div>
         </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleLogoUpload}
-          className="hidden"
-        />
+        <input ref={logoInputRef} type="file" accept="image/*" onChange={(e) => handleLogoUpload(e, 'alumni')} className="hidden" />
+
+        <div className="mt-3 space-y-2">
+          <p className="text-sm font-medium text-gray-600">Show alumni logo on:</p>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={showNavbar} onChange={(e) => setShowNavbar(e.target.checked)} className="rounded" />
+            <span className="text-sm">Navbar</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={showHero} onChange={(e) => setShowHero(e.target.checked)} className="rounded" />
+            <span className="text-sm">Homepage hero section</span>
+          </label>
+        </div>
       </div>
 
+      {/* School Logo */}
+      <div className="border rounded-lg p-4">
+        <h3 className="font-bold mb-3">School Logo</h3>
+        <div className="flex items-center gap-4">
+          <div
+            className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer"
+            onClick={() => schoolLogoInputRef.current?.click()}
+          >
+            {schoolLogoPreview ? (
+              <img src={schoolLogoPreview} alt="School logo preview" className="w-full h-full object-contain rounded-lg" />
+            ) : (
+              <span className="text-gray-400 text-sm">Logo</span>
+            )}
+          </div>
+          <div>
+            <button
+              type="button"
+              onClick={() => schoolLogoInputRef.current?.click()}
+              disabled={uploadingSchoolLogo}
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 disabled:opacity-50"
+            >
+              {uploadingSchoolLogo ? 'Uploading...' : 'Upload Logo'}
+            </button>
+            <p className="text-xs text-gray-500 mt-1">Max 5MB. PNG, JPG, SVG.</p>
+            {schoolLogoError && <p className="text-xs text-red-500 mt-1">{schoolLogoError}</p>}
+          </div>
+        </div>
+        <input ref={schoolLogoInputRef} type="file" accept="image/*" onChange={(e) => handleLogoUpload(e, 'school')} className="hidden" />
+
+        <div className="mt-3 space-y-2">
+          <p className="text-sm font-medium text-gray-600">Show school logo on:</p>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={showHero} onChange={(e) => setShowHero(e.target.checked)} className="rounded" />
+            <span className="text-sm">Homepage hero section</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={showFooter} onChange={(e) => setShowFooter(e.target.checked)} className="rounded" />
+            <span className="text-sm">Footer (all pages)</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={showAbout} onChange={(e) => setShowAbout(e.target.checked)} className="rounded" />
+            <span className="text-sm">About page</span>
+          </label>
+        </div>
+      </div>
+
+      {/* Mission */}
       <div>
         <label className="block text-sm font-medium mb-1">Mission *</label>
         <textarea
@@ -139,6 +214,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
         />
       </div>
 
+      {/* Vision */}
       <div>
         <label className="block text-sm font-medium mb-1">Vision *</label>
         <textarea
@@ -150,10 +226,9 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
         />
       </div>
 
+      {/* About */}
       <div>
-        <label className="block text-sm font-medium mb-1">
-          About (Additional Info)
-        </label>
+        <label className="block text-sm font-medium mb-1">About (Additional Info)</label>
         <textarea
           value={about}
           onChange={(e) => setAbout(e.target.value)}

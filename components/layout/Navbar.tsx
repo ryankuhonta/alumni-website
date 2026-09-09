@@ -10,6 +10,7 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [logoUrl, setLogoUrl] = useState('')
+  const [showLogo, setShowLogo] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
 
@@ -35,10 +36,11 @@ export default function Navbar() {
     const fetchLogo = async () => {
       const { data } = await supabase
         .from('organization_info')
-        .select('logo_url')
+        .select('logo_url, show_logo_navbar')
         .limit(1)
         .single()
       if (data?.logo_url) setLogoUrl(data.logo_url)
+      if (data?.show_logo_navbar !== undefined) setShowLogo(data.show_logo_navbar)
     }
 
     fetchUser()
@@ -77,7 +79,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            {logoUrl ? (
+            {showLogo && logoUrl ? (
               <img src={logoUrl} alt="LDSP Alumni Logo" className="h-10 w-auto" />
             ) : (
               <span className="text-xl font-bold">LDSP Alumni</span>
