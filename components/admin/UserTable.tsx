@@ -16,12 +16,16 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
     setLoading(userId)
     const supabase = createClient()
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('users')
       .update({ status })
       .eq('id', userId)
+      .select()
 
-    if (!error) {
+    if (error) {
+      console.error('Error updating status:', error)
+      alert('Failed to update status: ' + error.message)
+    } else {
       setUsers(
         users.map((u) => (u.id === userId ? { ...u, status } : u))
       )
