@@ -88,7 +88,7 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center space-x-6">
             <Link href="/about">About</Link>
-            <Link href="/directory">Directory</Link>
+            {user && <Link href="/directory">Directory</Link>}
             <Link href="/events">Events</Link>
             <Link href="/announcements">Announcements</Link>
             <Link href="/jobs">Jobs</Link>

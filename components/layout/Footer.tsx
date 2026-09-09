@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 export default async function Footer() {
   const supabase = await createClient()
 
+  const { data: { user } } = await supabase.auth.getUser()
+
   const { data: orgInfo } = await supabase
     .from('organization_info')
     .select('school_logo_url, show_logo_footer')
@@ -31,7 +33,7 @@ export default async function Footer() {
             <h3 className="font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li><Link href="/about" className="hover:text-white">About Us</Link></li>
-              <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
+              {user && <li><Link href="/directory" className="hover:text-white">Directory</Link></li>}
               <li><Link href="/events" className="hover:text-white">Events</Link></li>
               <li><Link href="/jobs" className="hover:text-white">Job Board</Link></li>
             </ul>
