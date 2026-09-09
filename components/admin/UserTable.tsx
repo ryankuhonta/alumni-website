@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User, UserStatus } from '@/types/database'
+import { logActivity } from '@/lib/activity-log'
 
 interface UserTableProps {
   users: User[]
@@ -28,6 +29,19 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
       setUsers(
         users.map((u) => (u.id === userId ? { ...u, status } : u))
       )
+      const user = users.find(u => u.id === userId)
+      if (user) {
+        await logActivity({
+          action: `user.${status}`,
+          targetType: 'user',
+          targetId: userId,
+          targetName: user.email,
+          details: {
+            before: { status: user.status },
+            after: { status }
+          }
+        })
+      }
     }
 
     setLoading(null)
