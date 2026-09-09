@@ -26,7 +26,7 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-[#0d1b2a] text-white py-20">
+      <section className="bg-blue-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
           {orgInfo?.show_logo_hero && orgInfo?.logo_url && (
             <img
