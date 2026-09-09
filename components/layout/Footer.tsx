@@ -23,7 +23,7 @@ export default async function Footer() {
               <img
                 src={orgInfo.school_logo_url}
                 alt="Liceo de San Pedro Logo"
-                className="h-16 mt-4 object-contain"
+                className="h-24 mt-4 object-contain"
               />
             )}
           </div>

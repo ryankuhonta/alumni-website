@@ -30,7 +30,7 @@ export default async function AboutPage() {
             <img
               src={orgInfo.school_logo_url}
               alt="Liceo de San Pedro Logo"
-              className="h-32 mx-auto object-contain"
+              className="h-40 mx-auto object-contain"
             />
           </div>
         )}
