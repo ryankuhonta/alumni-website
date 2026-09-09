@@ -39,7 +39,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
   const { data: orgInfo } = await supabase
     .from('organization_info')
-    .select('site_name, primary_color')
+    .select('site_name, primary_color, logo_url')
     .limit(1)
     .single()
 
