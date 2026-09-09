@@ -17,6 +17,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [logoError, setLogoError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,17 +35,21 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
     }
 
     setUploadingLogo(true)
+    setLogoError('')
     const supabase = createClient()
 
     const fileExt = file.name.split('.').pop()
     const fileName = `org-logo.${fileExt}`
 
     const { error } = await supabase.storage
-      .from('avatars')
+      .from('logos')
       .upload(fileName, file, { upsert: true })
 
-    if (!error) {
-      const { data } = supabase.storage.from('avatars').getPublicUrl(fileName)
+    if (error) {
+      console.error('Upload error:', error)
+      setLogoError(error.message)
+    } else {
+      const { data } = supabase.storage.from('logos').getPublicUrl(fileName)
       setLogoUrl(data.publicUrl)
       setLogoPreview(data.publicUrl)
     }
@@ -111,6 +116,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
               {uploadingLogo ? 'Uploading...' : 'Upload Logo'}
             </button>
             <p className="text-xs text-gray-500 mt-1">Max 5MB. PNG, JPG, SVG.</p>
+            {logoError && <p className="text-xs text-red-500 mt-1">{logoError}</p>}
           </div>
         </div>
         <input
