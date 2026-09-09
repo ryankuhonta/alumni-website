@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { logActivity } from '@/lib/activity-log'
 
 interface EventFormProps {
   initialData?: {
@@ -47,10 +48,42 @@ export default function EventForm({ initialData }: EventFormProps) {
       created_by: user!.id,
     }
 
+    let error = null
+    let insertedId = null
+
     if (initialData?.id) {
-      await supabase.from('events').update(data).eq('id', initialData.id)
+      const { error: updateError } = await supabase.from('events').update(data).eq('id', initialData.id)
+      error = updateError
     } else {
-      await supabase.from('events').insert(data)
+      const { data: insertData, error: insertError } = await supabase.from('events').insert(data).select('id').single()
+      error = insertError
+      insertedId = insertData?.id
+    }
+
+    if (error) {
+      console.error('Error saving event:', error)
+      alert('Failed to save event: ' + error.message)
+    } else {
+      if (initialData?.id) {
+        await logActivity({
+          action: 'event.update',
+          targetType: 'event',
+          targetId: initialData.id,
+          targetName: title,
+          details: {
+            before: { title: initialData.title, event_date: initialData.event_date },
+            after: { title, event_date: eventDate }
+          }
+        })
+      } else {
+        await logActivity({
+          action: 'event.create',
+          targetType: 'event',
+          targetId: insertedId,
+          targetName: title,
+          details: { after: { title, event_date: eventDate } }
+        })
+      }
     }
 
     setLoading(false)
