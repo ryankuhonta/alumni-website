@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { logActivity } from '@/lib/activity-log'
 
 interface AnnouncementListProps {
   announcements: {
@@ -31,6 +32,13 @@ export default function AnnouncementList({ announcements }: AnnouncementListProp
     if (error) {
       alert('Error deleting announcement: ' + error.message)
     } else {
+      await logActivity({
+        action: 'announcement.delete',
+        targetType: 'announcement',
+        targetId: id,
+        targetName: title,
+        details: { before: { title } }
+      })
       router.refresh()
     }
 

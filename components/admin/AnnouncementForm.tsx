@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { logActivity } from '@/lib/activity-log'
 
 interface AnnouncementFormProps {
   initialData?: {
@@ -38,13 +39,45 @@ export default function AnnouncementForm({
       created_by: user!.id,
     }
 
+    let error = null
+    let insertedId = null
+
     if (initialData?.id) {
-      await supabase
+      const { error: updateError } = await supabase
         .from('announcements')
         .update(data)
         .eq('id', initialData.id)
+      error = updateError
     } else {
-      await supabase.from('announcements').insert(data)
+      const { data: insertData, error: insertError } = await supabase.from('announcements').insert(data).select('id').single()
+      error = insertError
+      insertedId = insertData?.id
+    }
+
+    if (error) {
+      console.error('Error saving announcement:', error)
+      alert('Failed to save announcement: ' + error.message)
+    } else {
+      if (initialData?.id) {
+        await logActivity({
+          action: 'announcement.update',
+          targetType: 'announcement',
+          targetId: initialData.id,
+          targetName: title,
+          details: {
+            before: { title: initialData.title, is_pinned: initialData.is_pinned },
+            after: { title, is_pinned: isPinned }
+          }
+        })
+      } else {
+        await logActivity({
+          action: 'announcement.create',
+          targetType: 'announcement',
+          targetId: insertedId,
+          targetName: title,
+          details: { after: { title, is_pinned: isPinned } }
+        })
+      }
     }
 
     setLoading(false)
