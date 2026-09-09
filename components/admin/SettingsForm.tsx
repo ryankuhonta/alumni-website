@@ -132,8 +132,8 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
       alert('Failed to save settings: ' + error.message)
     } else {
       if (initialData?.id) {
-        const changes: Record<string, any> = {}
-        const before: Record<string, any> = {}
+        const changes: Record<string, unknown> = {}
+        const before: Record<string, unknown> = {}
 
         if (siteName !== initialData.site_name) {
           before.site_name = initialData.site_name
