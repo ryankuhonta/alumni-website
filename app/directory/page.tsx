@@ -16,6 +16,7 @@ export default async function DirectoryPage({
     .from('users')
     .select('*')
     .eq('status', 'approved')
+    .order('batch_year', { ascending: true })
     .order('last_name', { ascending: true })
 
   if (search) {
