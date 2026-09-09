@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import ActivityLogTable from '@/components/admin/ActivityLogTable'
+import CleanupButton from '@/components/admin/CleanupButton'
 
 export default async function ActivityLogPage({
   searchParams,
@@ -34,7 +35,7 @@ export default async function ActivityLogPage({
       <h1 className="text-2xl font-bold mb-6">Activity Log</h1>
 
       {/* Filter */}
-      <div className="mb-6 flex gap-4">
+      <div className="mb-6 flex gap-4 items-center">
         <a 
           href="/admin/activity"
           className={`px-3 py-1 rounded text-sm ${!actionFilter ? 'bg-blue-700 text-white' : 'bg-gray-200'}`}
@@ -50,6 +51,9 @@ export default async function ActivityLogPage({
             {action.split('.').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
           </a>
         ))}
+        <div className="ml-auto">
+          <CleanupButton />
+        </div>
       </div>
 
       {logs && logs.length > 0 ? (

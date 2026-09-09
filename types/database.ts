@@ -103,5 +103,6 @@ export interface OrganizationInfo {
   site_name?: string
   tagline?: string
   primary_color?: string
+  log_retention_years?: number
   updated_at: string
 }

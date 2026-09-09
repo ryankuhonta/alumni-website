@@ -35,6 +35,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
   const [siteName, setSiteName] = useState(initialData?.site_name || 'LDSP Alumni Association')
   const [tagline, setTagline] = useState(initialData?.tagline || 'Connecting Lasallian alumni for a lifetime')
   const [primaryColor, setPrimaryColor] = useState(initialData?.primary_color || '#1e40af')
+  const [logRetentionYears, setLogRetentionYears] = useState(initialData?.log_retention_years || 0)
 
   const colorChoices = [
     { label: 'Blue', value: '#1e40af' },
@@ -112,6 +113,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
       site_name: siteName,
       tagline: tagline,
       primary_color: primaryColor,
+      log_retention_years: logRetentionYears,
     }
 
     let error = null
@@ -387,6 +389,24 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
           rows={4}
           className="w-full border rounded px-3 py-2"
         />
+      </div>
+
+      {/* Activity Log Settings */}
+      <div className="border-t pt-6 mt-6">
+        <h3 className="text-lg font-semibold mb-4">Activity Log Settings</h3>
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Log Retention (years, 0 = forever)
+          </label>
+          <input
+            type="number"
+            min="0"
+            max="10"
+            value={logRetentionYears}
+            onChange={(e) => setLogRetentionYears(parseInt(e.target.value) || 0)}
+            className="w-full border rounded px-3 py-2"
+          />
+        </div>
       </div>
 
       <button
