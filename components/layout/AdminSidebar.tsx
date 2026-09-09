@@ -11,6 +11,7 @@ const links = [
   { href: '/admin/jobs', label: 'Jobs' },
   { href: '/admin/officers', label: 'Officers' },
   { href: '/admin/settings', label: 'Settings' },
+  { href: '/admin/activity', label: 'Activity Log' },
 ]
 
 export default function AdminSidebar() {
