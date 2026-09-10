@@ -12,7 +12,7 @@ export default async function Footer({ siteName }: FooterProps) {
 
   const { data: orgInfo } = await supabase
     .from('organization_info')
-    .select('school_logo_url, show_logo_footer, facebook_url, instagram_url, linkedin_url, show_facebook, show_instagram, show_linkedin')
+    .select('school_logo_url, show_logo_footer, facebook_url, instagram_url, linkedin_url, show_facebook, show_instagram, show_linkedin, tagline')
     .limit(1)
     .single()
 
@@ -23,7 +23,7 @@ export default async function Footer({ siteName }: FooterProps) {
           <div>
             <h3 className="font-bold mb-4">{siteName}</h3>
             <p className="text-gray-400 text-sm">
-              Connecting Lasallian alumni for a lifetime.
+              {orgInfo?.tagline || 'Connecting Lasallian alumni for a lifetime.'}
             </p>
             {orgInfo?.show_logo_footer && orgInfo?.school_logo_url && (
               <img
