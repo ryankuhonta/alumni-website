@@ -7,7 +7,8 @@ export default async function AdminUsersPage() {
   const { data: users } = await supabase
     .from('users')
     .select('*')
-    .order('created_at', { ascending: false })
+    .order('batch_year', { ascending: true })
+    .order('last_name', { ascending: true })
 
   return (
     <div>
