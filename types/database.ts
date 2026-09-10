@@ -104,5 +104,11 @@ export interface OrganizationInfo {
   tagline?: string
   primary_color?: string
   log_retention_years?: number
+  facebook_url?: string
+  instagram_url?: string
+  linkedin_url?: string
+  show_facebook?: boolean
+  show_instagram?: boolean
+  show_linkedin?: boolean
   updated_at: string
 }

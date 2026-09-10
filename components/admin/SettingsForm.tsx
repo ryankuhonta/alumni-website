@@ -37,6 +37,13 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
   const [primaryColor, setPrimaryColor] = useState(initialData?.primary_color || '#1e40af')
   const [logRetentionYears, setLogRetentionYears] = useState(initialData?.log_retention_years || 0)
 
+  const [facebookUrl, setFacebookUrl] = useState(initialData?.facebook_url || '')
+  const [instagramUrl, setInstagramUrl] = useState(initialData?.instagram_url || '')
+  const [linkedinUrl, setLinkedinUrl] = useState(initialData?.linkedin_url || '')
+  const [showFacebook, setShowFacebook] = useState(initialData?.show_facebook ?? false)
+  const [showInstagram, setShowInstagram] = useState(initialData?.show_instagram ?? false)
+  const [showLinkedin, setShowLinkedin] = useState(initialData?.show_linkedin ?? false)
+
   const colorChoices = [
     { label: 'Blue', value: '#1e40af' },
     { label: 'Green', value: '#16a34a' },
@@ -114,6 +121,12 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
       tagline: tagline,
       primary_color: primaryColor,
       log_retention_years: logRetentionYears,
+      facebook_url: facebookUrl,
+      instagram_url: instagramUrl,
+      linkedin_url: linkedinUrl,
+      show_facebook: showFacebook,
+      show_instagram: showInstagram,
+      show_linkedin: showLinkedin,
     }
 
     let error = null
@@ -188,6 +201,30 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
         if (showAlumniAbout !== initialData.show_alumni_logo_about) {
           before.show_alumni_logo_about = initialData.show_alumni_logo_about
           changes.show_alumni_logo_about = showAlumniAbout
+        }
+        if (facebookUrl !== initialData.facebook_url) {
+          before.facebook_url = initialData.facebook_url
+          changes.facebook_url = facebookUrl
+        }
+        if (instagramUrl !== initialData.instagram_url) {
+          before.instagram_url = initialData.instagram_url
+          changes.instagram_url = instagramUrl
+        }
+        if (linkedinUrl !== initialData.linkedin_url) {
+          before.linkedin_url = initialData.linkedin_url
+          changes.linkedin_url = linkedinUrl
+        }
+        if (showFacebook !== initialData.show_facebook) {
+          before.show_facebook = initialData.show_facebook
+          changes.show_facebook = showFacebook
+        }
+        if (showInstagram !== initialData.show_instagram) {
+          before.show_instagram = initialData.show_instagram
+          changes.show_instagram = showInstagram
+        }
+        if (showLinkedin !== initialData.show_linkedin) {
+          before.show_linkedin = initialData.show_linkedin
+          changes.show_linkedin = showLinkedin
         }
 
         if (Object.keys(changes).length > 0) {
@@ -390,6 +427,74 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
           rows={4}
           className="w-full border rounded px-3 py-2"
         />
+      </div>
+
+      {/* Social Media Links */}
+      <div className="border-t pt-6 mt-6">
+        <h3 className="text-lg font-semibold mb-4">Social Media Links</h3>
+        
+        {/* Facebook */}
+        <div className="mb-4">
+          <label className="flex items-center space-x-3 mb-2">
+            <input
+              type="checkbox"
+              checked={showFacebook}
+              onChange={(e) => setShowFacebook(e.target.checked)}
+              className="rounded"
+            />
+            <span className="font-medium">Show Facebook</span>
+          </label>
+          <input
+            type="url"
+            value={facebookUrl}
+            onChange={(e) => setFacebookUrl(e.target.value)}
+            placeholder="https://facebook.com/your-page"
+            disabled={!showFacebook}
+            className="w-full border rounded px-3 py-2 disabled:bg-gray-100"
+          />
+        </div>
+
+        {/* Instagram */}
+        <div className="mb-4">
+          <label className="flex items-center space-x-3 mb-2">
+            <input
+              type="checkbox"
+              checked={showInstagram}
+              onChange={(e) => setShowInstagram(e.target.checked)}
+              className="rounded"
+            />
+            <span className="font-medium">Show Instagram</span>
+          </label>
+          <input
+            type="url"
+            value={instagramUrl}
+            onChange={(e) => setInstagramUrl(e.target.value)}
+            placeholder="https://instagram.com/your-page"
+            disabled={!showInstagram}
+            className="w-full border rounded px-3 py-2 disabled:bg-gray-100"
+          />
+        </div>
+
+        {/* LinkedIn */}
+        <div>
+          <label className="flex items-center space-x-3 mb-2">
+            <input
+              type="checkbox"
+              checked={showLinkedin}
+              onChange={(e) => setShowLinkedin(e.target.checked)}
+              className="rounded"
+            />
+            <span className="font-medium">Show LinkedIn</span>
+          </label>
+          <input
+            type="url"
+            value={linkedinUrl}
+            onChange={(e) => setLinkedinUrl(e.target.value)}
+            placeholder="https://linkedin.com/company/your-page"
+            disabled={!showLinkedin}
+            className="w-full border rounded px-3 py-2 disabled:bg-gray-100"
+          />
+        </div>
       </div>
 
       {/* Activity Log Settings */}

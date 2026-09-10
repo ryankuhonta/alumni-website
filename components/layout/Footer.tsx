@@ -12,7 +12,7 @@ export default async function Footer({ siteName }: FooterProps) {
 
   const { data: orgInfo } = await supabase
     .from('organization_info')
-    .select('school_logo_url, show_logo_footer')
+    .select('school_logo_url, show_logo_footer, facebook_url, instagram_url, linkedin_url, show_facebook, show_instagram, show_linkedin')
     .limit(1)
     .single()
 
@@ -45,9 +45,15 @@ export default async function Footer({ siteName }: FooterProps) {
           <div>
             <h3 className="font-bold mb-4">Connect</h3>
             <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="#" className="hover:text-white">Facebook</a></li>
-              <li><a href="#" className="hover:text-white">Instagram</a></li>
-              <li><a href="#" className="hover:text-white">LinkedIn</a></li>
+              {orgInfo?.show_facebook && orgInfo?.facebook_url && (
+                <li><a href={orgInfo.facebook_url} target="_blank" rel="noopener noreferrer" className="hover:text-white">Facebook</a></li>
+              )}
+              {orgInfo?.show_instagram && orgInfo?.instagram_url && (
+                <li><a href={orgInfo.instagram_url} target="_blank" rel="noopener noreferrer" className="hover:text-white">Instagram</a></li>
+              )}
+              {orgInfo?.show_linkedin && orgInfo?.linkedin_url && (
+                <li><a href={orgInfo.linkedin_url} target="_blank" rel="noopener noreferrer" className="hover:text-white">LinkedIn</a></li>
+              )}
             </ul>
           </div>
         </div>
