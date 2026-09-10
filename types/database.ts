@@ -14,6 +14,11 @@ export interface User {
   current_company?: string
   location?: string
   profile_picture?: string
+  mobile_number?: string
+  facebook_url?: string
+  linkedin_url?: string
+  job_title?: string
+  birthday?: string
   role: UserRole
   status: UserStatus
   privacy_company: boolean

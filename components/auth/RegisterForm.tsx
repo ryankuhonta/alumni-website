@@ -12,6 +12,10 @@ export default function RegisterForm() {
   const [batchYear, setBatchYear] = useState('')
   const [currentCompany, setCurrentCompany] = useState('')
   const [location, setLocation] = useState('')
+  const [mobileNumber, setMobileNumber] = useState('')
+  const [jobTitle, setJobTitle] = useState('')
+  const [facebookUrl, setFacebookUrl] = useState('')
+  const [linkedinUrl, setLinkedinUrl] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -54,6 +58,10 @@ export default function RegisterForm() {
         batch_year: parseInt(batchYear),
         current_company: currentCompany || null,
         location: location || null,
+        mobile_number: mobileNumber || null,
+        job_title: jobTitle || null,
+        facebook_url: facebookUrl || null,
+        linkedin_url: linkedinUrl || null,
         role: 'alumni',
         status: 'approved',
       })
@@ -149,6 +157,50 @@ export default function RegisterForm() {
           type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
+          className="w-full border rounded px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Mobile Number</label>
+        <input
+          type="tel"
+          value={mobileNumber}
+          onChange={(e) => setMobileNumber(e.target.value)}
+          placeholder="09XX XXX XXXX"
+          className="w-full border rounded px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Job Title</label>
+        <input
+          type="text"
+          value={jobTitle}
+          onChange={(e) => setJobTitle(e.target.value)}
+          placeholder="e.g., Software Engineer"
+          className="w-full border rounded px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Facebook URL</label>
+        <input
+          type="url"
+          value={facebookUrl}
+          onChange={(e) => setFacebookUrl(e.target.value)}
+          placeholder="https://facebook.com/yourprofile"
+          className="w-full border rounded px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">LinkedIn URL</label>
+        <input
+          type="url"
+          value={linkedinUrl}
+          onChange={(e) => setLinkedinUrl(e.target.value)}
+          placeholder="https://linkedin.com/in/yourprofile"
           className="w-full border rounded px-3 py-2"
         />
       </div>

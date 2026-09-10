@@ -48,6 +48,42 @@ export default function ProfileView({ user }: ProfileViewProps) {
             </div>
           )}
 
+          {user.job_title && (
+            <div>
+              <label className="text-sm text-gray-500">Job Title</label>
+              <p className="font-medium">{user.job_title}</p>
+            </div>
+          )}
+
+          {user.mobile_number && (
+            <div>
+              <label className="text-sm text-gray-500">Mobile Number</label>
+              <p className="font-medium">{user.mobile_number}</p>
+            </div>
+          )}
+
+          {user.facebook_url && (
+            <div>
+              <label className="text-sm text-gray-500">Facebook</label>
+              <p className="font-medium">
+                <a href={user.facebook_url} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--primary-color)' }}>
+                  View Profile
+                </a>
+              </p>
+            </div>
+          )}
+
+          {user.linkedin_url && (
+            <div>
+              <label className="text-sm text-gray-500">LinkedIn</label>
+              <p className="font-medium">
+                <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--primary-color)' }}>
+                  View Profile
+                </a>
+              </p>
+            </div>
+          )}
+
           <div>
             <label className="text-sm text-gray-500">Member since</label>
             <p className="font-medium">

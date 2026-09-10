@@ -33,6 +33,9 @@ export default function AlumniCard({ user }: AlumniCardProps) {
           {user.course && (
             <p className="text-gray-500 text-sm">{user.course}</p>
           )}
+          {user.job_title && (
+            <p className="text-gray-500 text-sm">{user.job_title}</p>
+          )}
           {!user.privacy_company && user.current_company && (
             <p className="text-gray-500 text-sm">{user.current_company}</p>
           )}
