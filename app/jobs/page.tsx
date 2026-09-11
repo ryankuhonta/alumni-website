@@ -19,13 +19,13 @@ export default async function JobsPage() {
     <div className="py-12">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Job Board</h1>
+          <h1 className="text-3xl font-bold">Opportunities</h1>
           <Link
             href="/jobs/new"
             className="text-white px-4 py-2 rounded hover:opacity-90"
             style={{ backgroundColor: 'var(--primary-color)' }}
           >
-            Post a Job
+            Post an Opportunity
           </Link>
         </div>
 
@@ -36,7 +36,7 @@ export default async function JobsPage() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500">No job openings yet.</p>
+          <p className="text-gray-500">No opportunities posted yet.</p>
         )}
       </div>
     </div>

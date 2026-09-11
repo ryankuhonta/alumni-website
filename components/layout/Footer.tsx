@@ -39,7 +39,7 @@ export default async function Footer({ siteName }: FooterProps) {
               <li><Link href="/about" className="hover:text-white">About Us</Link></li>
               {user && <li><Link href="/directory" className="hover:text-white">Directory</Link></li>}
               <li><Link href="/events" className="hover:text-white">Events</Link></li>
-              {user && <li><Link href="/jobs" className="hover:text-white">Job Board</Link></li>}
+              {user && <li><Link href="/jobs" className="hover:text-white">Opportunities</Link></li>}
             </ul>
           </div>
           <div>

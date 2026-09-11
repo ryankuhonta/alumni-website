@@ -95,7 +95,7 @@ export default function Navbar({ siteName }: NavbarProps) {
             {user && <Link href="/directory">Directory</Link>}
             <Link href="/events">Events</Link>
             <Link href="/announcements">Announcements</Link>
-            {user && <Link href="/jobs">Jobs</Link>}
+            {user && <Link href="/jobs">Opportunities</Link>}
           </div>
 
           <div className="flex items-center space-x-4">

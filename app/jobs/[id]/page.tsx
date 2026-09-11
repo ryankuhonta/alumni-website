@@ -27,6 +27,17 @@ export default async function JobDetailPage({
     part_time: 'Part-time',
     contract: 'Contract',
     freelance: 'Freelance',
+    service: 'Service',
+    product: 'Product',
+  }
+
+  const jobTypeColors = {
+    full_time: 'bg-blue-100 text-blue-800',
+    part_time: 'bg-green-100 text-green-800',
+    contract: 'bg-yellow-100 text-yellow-800',
+    freelance: 'bg-purple-100 text-purple-800',
+    service: 'bg-orange-100 text-orange-800',
+    product: 'bg-pink-100 text-pink-800',
   }
 
   return (
@@ -41,7 +52,7 @@ export default async function JobDetailPage({
                 <p className="text-gray-500 mt-1">{job.location}</p>
               )}
             </div>
-            <span className="bg-gray-100 text-gray-700 px-4 py-2 rounded">
+            <span className={`px-4 py-2 rounded ${jobTypeColors[job.job_type as keyof typeof jobTypeColors]}`}>
               {jobTypeLabels[job.job_type as keyof typeof jobTypeLabels]}
             </span>
           </div>

@@ -13,11 +13,13 @@ export default async function AdminJobsPage() {
     part_time: 'Part-time',
     contract: 'Contract',
     freelance: 'Freelance',
+    service: 'Service',
+    product: 'Product',
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Manage Jobs</h1>
+      <h1 className="text-2xl font-bold mb-6">Manage Opportunities</h1>
 
       {jobs && jobs.length > 0 ? (
         <div className="space-y-4">
@@ -44,7 +46,7 @@ export default async function AdminJobsPage() {
           ))}
         </div>
       ) : (
-        <p className="text-gray-500">No jobs yet.</p>
+        <p className="text-gray-500">No opportunities yet.</p>
       )}
     </div>
   )

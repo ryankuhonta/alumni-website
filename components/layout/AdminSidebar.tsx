@@ -8,7 +8,7 @@ const links = [
   { href: '/admin/users', label: 'Users' },
   { href: '/admin/events', label: 'Events' },
   { href: '/admin/announcements', label: 'Announcements' },
-  { href: '/admin/jobs', label: 'Jobs' },
+  { href: '/admin/jobs', label: 'Opportunities' },
   { href: '/admin/officers', label: 'Officers' },
   { href: '/admin/settings', label: 'Settings' },
   { href: '/admin/activity', label: 'Activity Log' },

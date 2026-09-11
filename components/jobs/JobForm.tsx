@@ -63,18 +63,19 @@ export default function JobForm() {
       )}
 
       <div>
-        <label className="block text-sm font-medium mb-1">Job Title *</label>
+        <label className="block text-sm font-medium mb-1">Title *</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
           className="w-full border rounded px-3 py-2"
+          placeholder="e.g., Software Engineer, Web Design Service, LDSP Merchandise"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Company *</label>
+        <label className="block text-sm font-medium mb-1">Company / Business *</label>
         <input
           type="text"
           value={company}
@@ -95,16 +96,18 @@ export default function JobForm() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Job Type *</label>
+        <label className="block text-sm font-medium mb-1">Type *</label>
         <select
           value={jobType}
           onChange={(e) => setJobType(e.target.value as JobType)}
           className="w-full border rounded px-3 py-2"
         >
-          <option value="full_time">Full-time</option>
-          <option value="part_time">Part-time</option>
-          <option value="contract">Contract</option>
-          <option value="freelance">Freelance</option>
+          <option value="full_time">Job - Full-time</option>
+          <option value="part_time">Job - Part-time</option>
+          <option value="contract">Job - Contract</option>
+          <option value="freelance">Job - Freelance</option>
+          <option value="service">Service</option>
+          <option value="product">Product</option>
         </select>
       </div>
 
@@ -160,7 +163,7 @@ export default function JobForm() {
         disabled={loading}
         className="w-full bg-blue-700 text-white py-2 rounded hover:bg-blue-800 disabled:opacity-50"
       >
-        {loading ? 'Posting...' : 'Post Job'}
+        {loading ? 'Posting...' : 'Post Opportunity'}
       </button>
     </form>
   )
