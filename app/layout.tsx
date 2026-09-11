@@ -69,7 +69,9 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     icons: {
-      icon: orgInfo?.logo_url || '/favicon.ico',
+      icon: [
+        { url: '/org-logo.jpg', type: 'image/jpeg' },
+      ],
     },
   }
 }
@@ -92,9 +94,6 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       style={{ '--primary-color': primaryColor } as React.CSSProperties}
     >
-      <head>
-        <link rel="icon" href={orgInfo?.logo_url || "/favicon.ico"} />
-      </head>
       <body className="min-h-full flex flex-col">
         <div className="min-h-screen flex flex-col">
           <Navbar siteName={siteName} />
