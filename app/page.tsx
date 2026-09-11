@@ -1,5 +1,11 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Home',
+  description: 'Welcome to the LDSP Alumni Association - Connect with fellow Lasallian alumni, join events, and discover opportunities.',
+}
 
 export default async function HomePage() {
   const supabase = await createClient()

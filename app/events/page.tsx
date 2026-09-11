@@ -1,5 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import EventCard from '@/components/events/EventCard'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Events',
+  description: 'Discover upcoming reunions, gatherings, and events organized by the LDSP Alumni Association.',
+}
 
 export default async function EventsPage() {
   const supabase = await createClient()

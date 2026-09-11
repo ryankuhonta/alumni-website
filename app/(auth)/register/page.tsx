@@ -1,4 +1,10 @@
 import RegisterForm from '@/components/auth/RegisterForm'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Register',
+  description: 'Create your LDSP Alumni Association account and join our growing Lasallian community.',
+}
 
 export default function RegisterPage() {
   return (

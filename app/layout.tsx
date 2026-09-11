@@ -19,17 +19,57 @@ export async function generateMetadata(): Promise<Metadata> {
   const supabase = await createClient()
   const { data: orgInfo } = await supabase
     .from('organization_info')
-    .select('site_name, logo_url')
+    .select('site_name, tagline, logo_url, school_logo_url')
     .limit(1)
     .single()
 
   const siteName = orgInfo?.site_name || 'LDSP Alumni Association'
+  const tagline = orgInfo?.tagline || 'Connecting Lasallian alumni for a lifetime'
+  const logo = orgInfo?.logo_url || orgInfo?.school_logo_url
 
   return {
-    title: siteName,
-    description: "Connecting Lasallian alumni for a lifetime",
+    title: {
+      default: siteName,
+      template: `%s | ${siteName}`,
+    },
+    description: tagline,
+    keywords: ['alumni', 'LDSP', 'Liceo de San Pedro', 'Lasallian', 'alumni association', 'batch', 'reunion'],
+    authors: [{ name: siteName }],
+    openGraph: {
+      type: 'website',
+      locale: 'en_PH',
+      url: 'https://liceodesanpedroalumni.org',
+      siteName: siteName,
+      title: siteName,
+      description: tagline,
+      images: [
+        {
+          url: logo || '/og-image.png',
+          width: 1200,
+          height: 630,
+          alt: siteName,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: siteName,
+      description: tagline,
+      images: [logo || '/og-image.png'],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     icons: {
-      icon: orgInfo?.logo_url || "/favicon.ico",
+      icon: orgInfo?.logo_url || '/favicon.ico',
     },
   }
 }

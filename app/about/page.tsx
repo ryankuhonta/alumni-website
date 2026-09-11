@@ -1,4 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn about the LDSP Alumni Association - our mission, vision, and the officers serving our Lasallian community.',
+}
 
 export default async function AboutPage() {
   const supabase = await createClient()

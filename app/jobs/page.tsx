@@ -2,6 +2,12 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import JobCard from '@/components/jobs/JobCard'
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Opportunities',
+  description: 'Find jobs, services, and products posted by fellow LDSP alumni. Connect and grow together.',
+}
 
 export default async function JobsPage() {
   const supabase = await createClient()

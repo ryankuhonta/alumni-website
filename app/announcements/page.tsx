@@ -1,4 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Announcements',
+  description: 'Stay updated with the latest news and announcements from the LDSP Alumni Association.',
+}
 
 export default async function AnnouncementsPage() {
   const supabase = await createClient()

@@ -1,6 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import AlumniCard from '@/components/directory/AlumniCard'
 import SearchFilter from '@/components/directory/SearchFilter'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Alumni Directory',
+  description: 'Browse and connect with fellow LDSP alumni. Find classmates by name or batch year.',
+}
 
 export default async function DirectoryPage({
   searchParams,
