@@ -174,3 +174,31 @@ export function parseLocation(location: string): { province: string; city: strin
 
   return { province: 'Other Province', city: location }
 }
+
+// Region utilities for 3-level cascading
+export const REGIONS = [...new Set(LOCATION_DATA.map(p => p.region))]
+
+export function getProvincesByRegion(region: string): Province[] {
+  return LOCATION_DATA.filter(p => p.region === region)
+}
+
+export function parseLocation3Level(location: string): { region: string; province: string; city: string } {
+  if (!location) return { region: '', province: '', city: '' }
+
+  // Try 2-level parse first
+  const parsed = parseLocation(location)
+  if (parsed.province) {
+    const provinceData = LOCATION_DATA.find(p => p.name === parsed.province)
+    if (provinceData) {
+      return { region: provinceData.region, province: parsed.province, city: parsed.city }
+    }
+  }
+
+  // Check NCR/Metro Manila
+  if (location.startsWith('NCR') || location.startsWith('Metro Manila')) {
+    const city = location.replace('NCR - ', '').replace('NCR', '').replace('Metro Manila', '').replace('(', '').replace(')', '').trim()
+    return { region: 'NCR', province: 'Metro Manila (NCR)', city: city || '' }
+  }
+
+  return { region: '', province: parsed.province, city: parsed.city }
+}

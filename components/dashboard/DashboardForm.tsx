@@ -3,7 +3,7 @@
 import { useState, useRef, useMemo, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@/types/database'
-import { toTitleCase, LOCATION_DATA, formatLocation, parseLocation } from '@/lib/utils'
+import { toTitleCase, LOCATION_DATA, REGIONS, getProvincesByRegion, formatLocation, parseLocation3Level } from '@/lib/utils'
 
 interface DashboardFormProps {
   profile: User
@@ -15,6 +15,7 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
   const [currentCompany, setCurrentCompany] = useState(
     profile.current_company || ''
   )
+  const [region, setRegion] = useState('')
   const [province, setProvince] = useState('')
   const [city, setCity] = useState('')
   const [mobileNumber, setMobileNumber] = useState(profile.mobile_number || '')
@@ -37,15 +38,27 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
   // Parse existing location on mount
   useEffect(() => {
     if (profile.location) {
-      const parsed = parseLocation(profile.location)
+      const parsed = parseLocation3Level(profile.location)
+      setRegion(parsed.region)
       setProvince(parsed.province)
       setCity(parsed.city)
     }
   }, [profile.location])
 
+  const provincesInRegion = useMemo(() => {
+    if (!region) return []
+    return getProvincesByRegion(region)
+  }, [region])
+
   const selectedProvince = useMemo(() => {
     return LOCATION_DATA.find(p => p.name === province)
   }, [province])
+
+  const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRegion(e.target.value)
+    setProvince('')
+    setCity('')
+  }
 
   const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setProvince(e.target.value)
@@ -229,38 +242,53 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
           />
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-medium mb-1">Province</label>
-            <select
-              value={province}
-              onChange={handleProvinceChange}
-              className="w-full border rounded px-3 py-2"
-            >
-              <option value="">Select province</option>
-              {LOCATION_DATA.map((p) => (
-                <option key={p.name} value={p.name}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">City</label>
-            <select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              disabled={!province || !selectedProvince?.cities.length}
-              className="w-full border rounded px-3 py-2 disabled:bg-gray-100"
-            >
-              <option value="">
-                {!province ? 'Select province first' : !selectedProvince?.cities.length ? 'N/A' : 'Select city'}
-              </option>
-              {selectedProvince?.cities.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-              {selectedProvince?.cities.length === 0 && province !== 'Overseas' && (
-                <option value="Other">Other</option>
-              )}
-            </select>
+        {/* 3-Level Location Cascading */}
+        <div className="mt-4 space-y-2">
+          <label className="block text-sm font-medium">Location</label>
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <select
+                value={region}
+                onChange={handleRegionChange}
+                className="w-full border rounded px-3 py-2 text-sm"
+              >
+                <option value="">Region</option>
+                {REGIONS.map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                value={province}
+                onChange={handleProvinceChange}
+                disabled={!region}
+                className="w-full border rounded px-3 py-2 text-sm disabled:bg-gray-100"
+              >
+                <option value="">{!region ? 'Region first' : 'Province'}</option>
+                {provincesInRegion.map((p) => (
+                  <option key={p.name} value={p.name}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                disabled={!province || !selectedProvince?.cities.length}
+                className="w-full border rounded px-3 py-2 text-sm disabled:bg-gray-100"
+              >
+                <option value="">
+                  {!province ? 'Province first' : !selectedProvince?.cities.length ? 'N/A' : 'City'}
+                </option>
+                {selectedProvince?.cities.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+                {selectedProvince?.cities.length === 0 && province !== 'Overseas' && (
+                  <option value="Other">Other</option>
+                )}
+              </select>
+            </div>
           </div>
         </div>
 
