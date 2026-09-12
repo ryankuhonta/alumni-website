@@ -10,6 +10,8 @@ export default async function ProfilePage({
   const { id } = await params
   const supabase = await createClient()
 
+  const { data: { user: authUser } } = await supabase.auth.getUser()
+
   const { data: user } = await supabase
     .from('users')
     .select('*')
@@ -23,7 +25,7 @@ export default async function ProfilePage({
 
   return (
     <div className="py-12">
-      <ProfileView user={user} />
+      <ProfileView user={user} currentUserId={authUser?.id} />
     </div>
   )
 }

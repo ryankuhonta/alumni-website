@@ -1,10 +1,16 @@
+'use client'
+
 import { User } from '@/types/database'
+import MessageButton from './MessageButton'
 
 interface ProfileViewProps {
   user: User
+  currentUserId?: string
 }
 
-export default function ProfileView({ user }: ProfileViewProps) {
+export default function ProfileView({ user, currentUserId }: ProfileViewProps) {
+  const isOwnProfile = currentUserId === user.id
+
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white shadow rounded-lg p-8">
@@ -23,13 +29,16 @@ export default function ProfileView({ user }: ProfileViewProps) {
               </div>
             )}
           </div>
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold">
               {user.first_name} {user.last_name}
             </h1>
             <p style={{ color: 'var(--primary-color)' }}>Batch {user.batch_year}</p>
             {user.course && <p className="text-gray-600">{user.course}</p>}
           </div>
+          {!isOwnProfile && currentUserId && (
+            <MessageButton userId={user.id} />
+          )}
         </div>
 
         {/* Details */}

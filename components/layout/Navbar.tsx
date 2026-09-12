@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useRouter, usePathname } from 'next/navigation'
+import UnreadBadge from '@/components/messages/UnreadBadge'
 
 interface NavbarProps {
   siteName: string
@@ -96,6 +97,12 @@ export default function Navbar({ siteName }: NavbarProps) {
             <Link href="/events">Events</Link>
             <Link href="/announcements">Announcements</Link>
             {user && <Link href="/jobs">Opportunities</Link>}
+            {user && (
+              <div className="relative">
+                <Link href="/messages">Messages</Link>
+                <UnreadBadge />
+              </div>
+            )}
           </div>
 
           <div className="flex items-center space-x-4">
