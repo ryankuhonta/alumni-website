@@ -37,15 +37,19 @@ export async function getOrCreateConversation(recipientId: string) {
 
   if (convError) throw convError
 
-  // Add both participants
-  const { error: partError } = await supabase
+  // Add sender first
+  const { error: partError1 } = await supabase
     .from('conversation_participants')
-    .insert([
-      { conversation_id: conversation.id, user_id: user.id },
-      { conversation_id: conversation.id, user_id: recipientId },
-    ])
+    .insert({ conversation_id: conversation.id, user_id: user.id })
 
-  if (partError) throw partError
+  if (partError1) throw partError1
+
+  // Then add recipient
+  const { error: partError2 } = await supabase
+    .from('conversation_participants')
+    .insert({ conversation_id: conversation.id, user_id: recipientId })
+
+  if (partError2) throw partError2
 
   return { conversationId: conversation.id, isNew: true }
 }

@@ -58,12 +58,17 @@ CREATE POLICY "Users can view conversation participants" ON alumni_v2.conversati
     )
   );
 
--- Users can add participants to conversations they're in
+-- Users can add participants to conversations they're in (or to empty new conversations)
 CREATE POLICY "Users can add participants" ON alumni_v2.conversation_participants
   FOR INSERT WITH CHECK (
     EXISTS (
       SELECT 1 FROM alumni_v2.conversation_participants cp
       WHERE cp.conversation_id = conversation_participants.conversation_id AND cp.user_id = auth.uid()
+    )
+    OR
+    NOT EXISTS (
+      SELECT 1 FROM alumni_v2.conversation_participants cp
+      WHERE cp.conversation_id = conversation_participants.conversation_id
     )
   );
 
