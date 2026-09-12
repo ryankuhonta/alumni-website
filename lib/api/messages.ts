@@ -6,52 +6,16 @@ export async function getOrCreateConversation(recipientId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
-  // Get all conversations user is in
-  const { data: myParticipants } = await supabase
-    .from('conversation_participants')
-    .select('conversation_id')
-    .eq('user_id', user.id)
+  // Use SECURITY DEFINER function to avoid RLS recursion
+  const { data, error } = await supabase
+    .rpc('create_conversation', { p_recipient_id: recipientId })
 
-  if (myParticipants && myParticipants.length > 0) {
-    // Check if recipient is in any of these conversations
-    for (const p of myParticipants) {
-      const { data: recipientParticipant } = await supabase
-        .from('conversation_participants')
-        .select('conversation_id')
-        .eq('conversation_id', p.conversation_id)
-        .eq('user_id', recipientId)
-        .single()
-
-      if (recipientParticipant) {
-        return { conversationId: p.conversation_id, isNew: false }
-      }
-    }
+  if (error) {
+    console.error('create_conversation error:', JSON.stringify(error))
+    throw new Error(error.message || 'Failed to create conversation')
   }
 
-  // Create new conversation
-  const { data: conversation, error: convError } = await supabase
-    .from('conversations')
-    .insert({})
-    .select()
-    .single()
-
-  if (convError) throw convError
-
-  // Add sender first
-  const { error: partError1 } = await supabase
-    .from('conversation_participants')
-    .insert({ conversation_id: conversation.id, user_id: user.id })
-
-  if (partError1) throw partError1
-
-  // Then add recipient
-  const { error: partError2 } = await supabase
-    .from('conversation_participants')
-    .insert({ conversation_id: conversation.id, user_id: recipientId })
-
-  if (partError2) throw partError2
-
-  return { conversationId: conversation.id, isNew: true }
+  return { conversationId: data, isNew: true }
 }
 
 export async function sendMessage(conversationId: string, content: string) {
