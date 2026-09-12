@@ -18,10 +18,19 @@ export async function getOrCreateConversation(recipientId: string) {
   return { conversationId: data, isNew: true }
 }
 
-export async function sendMessage(conversationId: string, content: string) {
+export async function sendMessage(content: string, conversationId?: string, recipientId?: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
+
+  // If no conversationId, create conversation with recipient
+  if (!conversationId) {
+    if (!recipientId) throw new Error('Either conversationId or recipientId is required')
+    const { data, error } = await supabase
+      .rpc('create_conversation', { p_recipient_id: recipientId })
+    if (error) throw new Error(error.message || 'Failed to create conversation')
+    conversationId = data
+  }
 
   const { error } = await supabase
     .from('messages')
@@ -38,6 +47,8 @@ export async function sendMessage(conversationId: string, content: string) {
     .from('conversations')
     .update({ updated_at: new Date().toISOString() })
     .eq('id', conversationId)
+
+  return { conversationId }
 }
 
 export async function getConversations(): Promise<ConversationWithDetails[]> {
