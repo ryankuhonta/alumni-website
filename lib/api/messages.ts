@@ -96,6 +96,9 @@ export async function getConversations(): Promise<ConversationWithDetails[]> {
       .limit(1)
       .single()
 
+    // Skip conversations with no messages (empty conversations)
+    if (!lastMessage) continue
+
     // Get unread count
     const { data: myParticipant } = await supabase
       .from('conversation_participants')
