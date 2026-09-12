@@ -7,6 +7,8 @@ export async function POST(request: Request) {
     const result = await getOrCreateConversation(recipientId)
     return NextResponse.json(result)
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create conversation' }, { status: 500 })
+    console.error('CONVERSATION API ERROR:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
