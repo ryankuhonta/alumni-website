@@ -16,6 +16,9 @@ export default function InboxList() {
     try {
       const res = await fetch('/api/messages/conversations')
       const data = await res.json()
+      if (data.error) {
+        console.error('Conversations API error:', data.error)
+      }
       setConversations(data.conversations || [])
     } catch (error) {
       console.error('Failed to fetch conversations:', error)
