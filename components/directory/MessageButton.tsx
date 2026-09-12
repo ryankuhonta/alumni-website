@@ -26,7 +26,8 @@ export default function MessageButton({ userId }: MessageButtonProps) {
         router.push(`/messages/${data.conversationId}`)
       } else {
         console.error('API error:', data)
-        setError(data.error || 'Failed to start conversation')
+        const errMsg = typeof data.error === 'object' ? JSON.stringify(data.error) : (data.error || 'Failed to start conversation')
+        setError(errMsg)
       }
     } catch (error) {
       console.error('Failed to start conversation:', error)
