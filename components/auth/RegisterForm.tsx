@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { toTitleCase, PREDEFINED_LOCATIONS } from '@/lib/utils'
+import { toTitleCase, LOCATION_DATA, formatLocation, parseLocation } from '@/lib/utils'
 
 export default function RegisterForm() {
   const [email, setEmail] = useState('')
@@ -12,7 +12,8 @@ export default function RegisterForm() {
   const [lastName, setLastName] = useState('')
   const [batchYear, setBatchYear] = useState('')
   const [currentCompany, setCurrentCompany] = useState('')
-  const [location, setLocation] = useState('')
+  const [province, setProvince] = useState('')
+  const [city, setCity] = useState('')
   const [mobileNumber, setMobileNumber] = useState('')
   const [jobTitle, setJobTitle] = useState('')
   const [facebookUrl, setFacebookUrl] = useState('')
@@ -20,6 +21,15 @@ export default function RegisterForm() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  const selectedProvince = useMemo(() => {
+    return LOCATION_DATA.find(p => p.name === province)
+  }, [province])
+
+  const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setProvince(e.target.value)
+    setCity('')
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -51,6 +61,8 @@ export default function RegisterForm() {
         }
       }
 
+      const locationValue = formatLocation(province, city)
+
       const { error: profileError } = await supabase.from('users').insert({
         id: data.user.id,
         email,
@@ -58,7 +70,7 @@ export default function RegisterForm() {
         last_name: toTitleCase(lastName),
         batch_year: parseInt(batchYear),
         current_company: currentCompany || null,
-        location: location || null,
+        location: locationValue || null,
         mobile_number: mobileNumber || null,
         job_title: jobTitle || null,
         facebook_url: facebookUrl || null,
@@ -152,18 +164,39 @@ export default function RegisterForm() {
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">Location</label>
-        <select
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="w-full border rounded px-3 py-2"
-        >
-          <option value="">Select location</option>
-          {PREDEFINED_LOCATIONS.map((loc) => (
-            <option key={loc} value={loc}>{loc}</option>
-          ))}
-        </select>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium mb-1">Province</label>
+          <select
+            value={province}
+            onChange={handleProvinceChange}
+            className="w-full border rounded px-3 py-2"
+          >
+            <option value="">Select province</option>
+            {LOCATION_DATA.map((p) => (
+              <option key={p.name} value={p.name}>{p.name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">City</label>
+          <select
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            disabled={!province || !selectedProvince?.cities.length}
+            className="w-full border rounded px-3 py-2 disabled:bg-gray-100"
+          >
+            <option value="">
+              {!province ? 'Select province first' : !selectedProvince?.cities.length ? 'N/A' : 'Select city'}
+            </option>
+            {selectedProvince?.cities.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+            {selectedProvince?.cities.length === 0 && province !== 'Overseas' && (
+              <option value="Other">Other</option>
+            )}
+          </select>
+        </div>
       </div>
 
       <div>

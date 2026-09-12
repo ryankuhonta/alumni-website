@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@/types/database'
-import { toTitleCase, PREDEFINED_LOCATIONS } from '@/lib/utils'
+import { toTitleCase, LOCATION_DATA, formatLocation, parseLocation } from '@/lib/utils'
 
 interface DashboardFormProps {
   profile: User
@@ -15,7 +15,8 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
   const [currentCompany, setCurrentCompany] = useState(
     profile.current_company || ''
   )
-  const [location, setLocation] = useState(profile.location || '')
+  const [province, setProvince] = useState('')
+  const [city, setCity] = useState('')
   const [mobileNumber, setMobileNumber] = useState(profile.mobile_number || '')
   const [jobTitle, setJobTitle] = useState(profile.job_title || '')
   const [facebookUrl, setFacebookUrl] = useState(profile.facebook_url || '')
@@ -32,6 +33,24 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Parse existing location on mount
+  useEffect(() => {
+    if (profile.location) {
+      const parsed = parseLocation(profile.location)
+      setProvince(parsed.province)
+      setCity(parsed.city)
+    }
+  }, [profile.location])
+
+  const selectedProvince = useMemo(() => {
+    return LOCATION_DATA.find(p => p.name === province)
+  }, [province])
+
+  const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setProvince(e.target.value)
+    setCity('')
+  }
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -78,13 +97,15 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
     setLoading(true)
     const supabase = createClient()
 
+    const locationValue = formatLocation(province, city)
+
     const { error: updateError } = await supabase
       .from('users')
       .update({
         first_name: toTitleCase(firstName),
         last_name: toTitleCase(lastName),
         current_company: currentCompany || null,
-        location: location || null,
+        location: locationValue || null,
         mobile_number: mobileNumber || null,
         job_title: jobTitle || null,
         facebook_url: facebookUrl || null,
@@ -208,18 +229,39 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
           />
         </div>
 
-        <div className="mt-4">
-          <label className="block text-sm font-medium mb-1">Location</label>
-          <select
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="">Select location</option>
-            {PREDEFINED_LOCATIONS.map((loc) => (
-              <option key={loc} value={loc}>{loc}</option>
-            ))}
-          </select>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium mb-1">Province</label>
+            <select
+              value={province}
+              onChange={handleProvinceChange}
+              className="w-full border rounded px-3 py-2"
+            >
+              <option value="">Select province</option>
+              {LOCATION_DATA.map((p) => (
+                <option key={p.name} value={p.name}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">City</label>
+            <select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              disabled={!province || !selectedProvince?.cities.length}
+              className="w-full border rounded px-3 py-2 disabled:bg-gray-100"
+            >
+              <option value="">
+                {!province ? 'Select province first' : !selectedProvince?.cities.length ? 'N/A' : 'Select city'}
+              </option>
+              {selectedProvince?.cities.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+              {selectedProvince?.cities.length === 0 && province !== 'Overseas' && (
+                <option value="Other">Other</option>
+              )}
+            </select>
+          </div>
         </div>
 
         <div className="mt-4">
