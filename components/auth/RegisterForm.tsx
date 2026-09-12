@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { toTitleCase, PREDEFINED_LOCATIONS } from '@/lib/utils'
 
 export default function RegisterForm() {
   const [email, setEmail] = useState('')
@@ -53,8 +54,8 @@ export default function RegisterForm() {
       const { error: profileError } = await supabase.from('users').insert({
         id: data.user.id,
         email,
-        first_name: firstName,
-        last_name: lastName,
+        first_name: toTitleCase(firstName),
+        last_name: toTitleCase(lastName),
         batch_year: parseInt(batchYear),
         current_company: currentCompany || null,
         location: location || null,
@@ -153,12 +154,16 @@ export default function RegisterForm() {
 
       <div>
         <label className="block text-sm font-medium mb-1">Location</label>
-        <input
-          type="text"
+        <select
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           className="w-full border rounded px-3 py-2"
-        />
+        >
+          <option value="">Select location</option>
+          {PREDEFINED_LOCATIONS.map((loc) => (
+            <option key={loc} value={loc}>{loc}</option>
+          ))}
+        </select>
       </div>
 
       <div>

@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@/types/database'
+import { toTitleCase, PREDEFINED_LOCATIONS } from '@/lib/utils'
 
 interface DashboardFormProps {
   profile: User
@@ -80,8 +81,8 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
     const { error: updateError } = await supabase
       .from('users')
       .update({
-        first_name: firstName,
-        last_name: lastName,
+        first_name: toTitleCase(firstName),
+        last_name: toTitleCase(lastName),
         current_company: currentCompany || null,
         location: location || null,
         mobile_number: mobileNumber || null,
@@ -209,12 +210,16 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
 
         <div className="mt-4">
           <label className="block text-sm font-medium mb-1">Location</label>
-          <input
-            type="text"
+          <select
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             className="w-full border rounded px-3 py-2"
-          />
+          >
+            <option value="">Select location</option>
+            {PREDEFINED_LOCATIONS.map((loc) => (
+              <option key={loc} value={loc}>{loc}</option>
+            ))}
+          </select>
         </div>
 
         <div className="mt-4">
