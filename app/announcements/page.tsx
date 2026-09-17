@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import MarkAnnouncementsViewed from '@/components/announcements/MarkAnnouncementsViewed'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -19,6 +20,8 @@ export default async function AnnouncementsPage() {
     <div className="py-12">
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-3xl font-bold mb-8">Announcements</h1>
+
+        <MarkAnnouncementsViewed />
 
         {announcements && announcements.length > 0 ? (
           <div className="space-y-6">

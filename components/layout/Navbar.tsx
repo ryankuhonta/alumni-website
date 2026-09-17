@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import UnreadBadge from '@/components/messages/UnreadBadge'
+import UnreadAnnouncementsBadge from '@/components/announcements/UnreadAnnouncementsBadge'
 
 interface NavbarProps {
   siteName: string
@@ -94,7 +95,10 @@ export default function Navbar({ siteName }: NavbarProps) {
             <Link href="/about">About</Link>
             {user && <Link href="/directory">Directory</Link>}
             <Link href="/events">Events</Link>
-            <Link href="/announcements">Announcements</Link>
+            <Link href="/announcements" className="relative">
+              Announcements
+              {user && <UnreadAnnouncementsBadge />}
+            </Link>
             {user && <Link href="/jobs">Opportunities</Link>}
             {user && (
               <div className="relative">
