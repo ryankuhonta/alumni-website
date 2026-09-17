@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import JobCard from '@/components/jobs/JobCard'
+import MarkJobsViewed from '@/components/jobs/MarkJobsViewed'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -34,6 +35,8 @@ export default async function JobsPage() {
             Post to Alumni Network
           </Link>
         </div>
+
+        <MarkJobsViewed />
 
         {jobs && jobs.length > 0 ? (
           <div className="space-y-4">
