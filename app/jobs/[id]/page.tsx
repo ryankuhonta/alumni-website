@@ -14,7 +14,10 @@ export default async function JobDetailPage({
 
   const { data: job } = await supabase
     .from('jobs')
-    .select('*')
+    .select(`
+      *,
+      poster:users!jobs_posted_by_fkey(first_name, last_name)
+    `)
     .eq('id', id)
     .single()
 
@@ -59,13 +62,13 @@ export default async function JobDetailPage({
 
           <div className="prose max-w-none mb-8">
             <h2 className="text-xl font-bold">Description</h2>
-            <p className="whitespace-pre-wrap">{job.description}</p>
+            <div className="whitespace-pre-wrap">{job.description}</div>
           </div>
 
           {job.requirements && (
             <div className="prose max-w-none mb-8">
               <h2 className="text-xl font-bold">Requirements</h2>
-              <p className="whitespace-pre-wrap">{job.requirements}</p>
+              <div className="whitespace-pre-wrap">{job.requirements}</div>
             </div>
           )}
 
@@ -100,6 +103,9 @@ export default async function JobDetailPage({
 
           <div className="text-sm text-gray-400 mt-8">
             Posted {new Date(job.created_at).toLocaleDateString()}
+            {job.poster && (
+              <span> by {job.poster.first_name} {job.poster.last_name}</span>
+            )}
           </div>
         </div>
       </div>

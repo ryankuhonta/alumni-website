@@ -4,16 +4,33 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { JobType } from '@/types/database'
+import { logActivity } from '@/lib/activity-log'
 
-export default function JobForm() {
-  const [title, setTitle] = useState('')
-  const [company, setCompany] = useState('')
-  const [location, setLocation] = useState('')
-  const [description, setDescription] = useState('')
-  const [requirements, setRequirements] = useState('')
-  const [applicationLink, setApplicationLink] = useState('')
-  const [applicationEmail, setApplicationEmail] = useState('')
-  const [jobType, setJobType] = useState<JobType>('full_time')
+interface JobFormProps {
+  initialData?: {
+    id: string
+    title: string
+    company: string
+    location: string | null
+    description: string
+    requirements: string | null
+    application_link: string | null
+    application_email: string | null
+    job_type: JobType
+    status: string
+  }
+}
+
+export default function JobForm({ initialData }: JobFormProps) {
+  const [title, setTitle] = useState(initialData?.title || '')
+  const [company, setCompany] = useState(initialData?.company || '')
+  const [location, setLocation] = useState(initialData?.location || '')
+  const [description, setDescription] = useState(initialData?.description || '')
+  const [requirements, setRequirements] = useState(initialData?.requirements || '')
+  const [applicationLink, setApplicationLink] = useState(initialData?.application_link || '')
+  const [applicationEmail, setApplicationEmail] = useState(initialData?.application_email || '')
+  const [jobType, setJobType] = useState<JobType>(initialData?.job_type || 'full_time')
+  const [status, setStatus] = useState(initialData?.status || 'active')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -29,12 +46,12 @@ export default function JobForm() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      setError('You must be logged in to post a job.')
+      setError('You must be logged in.')
       setLoading(false)
       return
     }
 
-    const { error: insertError } = await supabase.from('jobs').insert({
+    const data = {
       title,
       company,
       location: location || null,
@@ -43,17 +60,55 @@ export default function JobForm() {
       application_link: applicationLink || null,
       application_email: applicationEmail || null,
       job_type: jobType,
-      posted_by: user.id,
-      status: 'active',
-    })
+      status,
+    }
 
-    if (insertError) {
-      setError('Failed to post job. Please try again.')
+    let error2 = null
+
+    if (initialData?.id) {
+      const { error: updateError } = await supabase
+        .from('jobs')
+        .update(data)
+        .eq('id', initialData.id)
+      error2 = updateError
+
+      if (!updateError) {
+        await logActivity({
+          action: 'job.update',
+          targetType: 'job',
+          targetId: initialData.id,
+          targetName: title,
+          details: {
+            before: { title: initialData.title, status: initialData.status },
+            after: { title, status }
+          }
+        })
+      }
+    } else {
+      const { error: insertError } = await supabase.from('jobs').insert({
+        ...data,
+        posted_by: user.id,
+      })
+      error2 = insertError
+
+      if (!insertError) {
+        await logActivity({
+          action: 'job.create',
+          targetType: 'job',
+          targetName: title,
+          details: { after: { title, job_type: jobType } }
+        })
+      }
+    }
+
+    if (error2) {
+      setError('Failed to save. Please try again.')
       setLoading(false)
       return
     }
 
-    router.push('/jobs')
+    router.push(initialData?.id ? '/admin/jobs' : '/jobs')
+    router.refresh()
   }
 
   return (
@@ -158,12 +213,31 @@ export default function JobForm() {
         />
       </div>
 
+      {initialData?.id && (
+        <div>
+          <label className="block text-sm font-medium mb-1">Status</label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+          >
+            <option value="active">Active</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+      )}
+
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-700 text-white py-2 rounded hover:bg-blue-800 disabled:opacity-50"
+        className="w-full text-white py-2 rounded hover:opacity-90 disabled:opacity-50"
+        style={{ backgroundColor: 'var(--primary-color)' }}
       >
-        {loading ? 'Posting...' : 'Post Opportunity'}
+        {loading
+          ? 'Saving...'
+          : initialData?.id
+          ? 'Update Opportunity'
+          : 'Post Opportunity'}
       </button>
     </form>
   )

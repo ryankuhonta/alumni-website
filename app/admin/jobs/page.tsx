@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import AdminJobList from '@/components/admin/AdminJobList'
 
 export default async function AdminJobsPage() {
   const supabase = await createClient()
@@ -8,43 +9,12 @@ export default async function AdminJobsPage() {
     .select('*')
     .order('created_at', { ascending: false })
 
-  const jobTypeLabels = {
-    full_time: 'Full-time',
-    part_time: 'Part-time',
-    contract: 'Contract',
-    freelance: 'Freelance',
-    service: 'Service',
-    product: 'Product',
-  }
-
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Manage Opportunities</h1>
 
       {jobs && jobs.length > 0 ? (
-        <div className="space-y-4">
-          {jobs.map((job) => (
-            <div key={job.id} className="border rounded p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold">{job.title}</h3>
-                  <p className="text-sm text-gray-500">
-                    {job.company} · {jobTypeLabels[job.job_type as keyof typeof jobTypeLabels]}
-                  </p>
-                </div>
-                <span
-                  className={`px-2 py-1 rounded text-sm ${
-                    job.status === 'active'
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}
-                >
-                  {job.status}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+        <AdminJobList jobs={jobs} />
       ) : (
         <p className="text-gray-500">No opportunities yet.</p>
       )}
