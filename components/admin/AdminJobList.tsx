@@ -73,7 +73,7 @@ export default function AdminJobList({ jobs }: AdminJobsPageProps) {
         <div key={job.id} className="border rounded p-4">
           {editing === job.id ? (
             <div>
-              <JobForm initialData={job} />
+              <JobForm initialData={job} onSave={() => setEditing(null)} />
               <button
                 onClick={() => setEditing(null)}
                 className="mt-2 text-gray-600 hover:text-gray-800"

@@ -19,9 +19,10 @@ interface JobFormProps {
     job_type: JobType
     status: string
   }
+  onSave?: () => void
 }
 
-export default function JobForm({ initialData }: JobFormProps) {
+export default function JobForm({ initialData, onSave }: JobFormProps) {
   const [title, setTitle] = useState(initialData?.title || '')
   const [company, setCompany] = useState(initialData?.company || '')
   const [location, setLocation] = useState(initialData?.location || '')
@@ -73,16 +74,18 @@ export default function JobForm({ initialData }: JobFormProps) {
       error2 = updateError
 
       if (!updateError) {
-        await logActivity({
-          action: 'job.update',
-          targetType: 'job',
-          targetId: initialData.id,
-          targetName: title,
-          details: {
-            before: { title: initialData.title, status: initialData.status },
-            after: { title, status }
-          }
-        })
+        try {
+          await logActivity({
+            action: 'job.update',
+            targetType: 'job',
+            targetId: initialData.id,
+            targetName: title,
+            details: {
+              before: { title: initialData.title, status: initialData.status },
+              after: { title, status }
+            }
+          })
+        } catch (e) { console.error('Activity log failed:', e) }
       }
     } else {
       const { error: insertError } = await supabase.from('jobs').insert({
@@ -92,23 +95,32 @@ export default function JobForm({ initialData }: JobFormProps) {
       error2 = insertError
 
       if (!insertError) {
-        await logActivity({
-          action: 'job.create',
-          targetType: 'job',
-          targetName: title,
-          details: { after: { title, job_type: jobType } }
-        })
+        try {
+          await logActivity({
+            action: 'job.create',
+            targetType: 'job',
+            targetName: title,
+            details: { after: { title, job_type: jobType } }
+          })
+        } catch (e) { console.error('Activity log failed:', e) }
       }
     }
 
     if (error2) {
-      setError('Failed to save. Please try again.')
+      setError('Failed to save: ' + error2.message)
       setLoading(false)
       return
     }
 
-    router.push(initialData?.id ? '/admin/jobs' : '/jobs')
-    router.refresh()
+    if (initialData?.id) {
+      if (onSave) {
+        onSave()
+      } else {
+        router.refresh()
+      }
+    } else {
+      router.push('/jobs')
+    }
   }
 
   return (

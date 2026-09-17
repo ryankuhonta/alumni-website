@@ -81,8 +81,11 @@ export default function AnnouncementForm({
     }
 
     setLoading(false)
-    router.push('/admin/announcements')
-    router.refresh()
+    if (initialData?.id) {
+      router.refresh()
+    } else {
+      router.push('/admin/announcements')
+    }
   }
 
   return (
