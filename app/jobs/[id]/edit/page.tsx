@@ -27,11 +27,27 @@ export default async function EditJobPage({
 
   if (!job) notFound()
 
-  // Only admin or poster can edit
-  const isAdmin = profile?.role === 'admin'
-  const isPoster = job.posted_by === user.id
+  // Check poster's role
+  let posterRole = 'alumni'
+  if (job.posted_by && job.posted_by !== user.id) {
+    const { data: poster } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', job.posted_by)
+      .single()
+    posterRole = poster?.role || 'alumni'
+  }
 
-  if (!isAdmin && !isPoster) {
+  const isOwner = job.posted_by === user.id
+  const isAdmin = profile?.role === 'admin'
+  const isModerator = profile?.role === 'moderator'
+
+  // Alumni: only own posts
+  // Moderator: own posts + alumni posts (not admin posts)
+  // Admin: all
+  const canEdit = isOwner || isAdmin || (isModerator && posterRole !== 'admin')
+
+  if (!canEdit) {
     redirect('/jobs')
   }
 

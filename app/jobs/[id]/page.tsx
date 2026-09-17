@@ -126,7 +126,7 @@ export default async function JobDetailPage({
             jobTitle={job.title}
             postedBy={job.posted_by}
             currentUserId={user.id}
-            isAdmin={profile?.role === 'admin'}
+            currentUserRole={profile?.role || 'alumni'}
           />
         </div>
       </div>

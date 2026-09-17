@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { logActivity } from '@/lib/activity-log'
@@ -22,14 +22,44 @@ interface Job {
   posted_by: string | null
 }
 
-interface AdminJobsPageProps {
+interface AdminJobListProps {
   jobs: Job[]
+  currentUserRole: string
+  currentUserId: string
 }
 
-export default function AdminJobList({ jobs }: AdminJobsPageProps) {
+export default function AdminJobList({ jobs, currentUserRole, currentUserId }: AdminJobListProps) {
   const [deleting, setDeleting] = useState<string | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
+  const [posterRoles, setPosterRoles] = useState<Record<string, string>>({})
   const router = useRouter()
+
+  useEffect(() => {
+    const fetchPosterRoles = async () => {
+      const supabase = createClient()
+      const posterIds = [...new Set(jobs.map(j => j.posted_by).filter(Boolean))] as string[]
+      if (posterIds.length === 0) return
+
+      const { data } = await supabase
+        .from('users')
+        .select('id, role')
+        .in('id', posterIds)
+
+      if (data) {
+        const roles: Record<string, string> = {}
+        data.forEach(u => { roles[u.id] = u.role })
+        setPosterRoles(roles)
+      }
+    }
+    fetchPosterRoles()
+  }, [jobs])
+
+  const canEdit = (job: Job) => {
+    if (job.posted_by === currentUserId) return true
+    if (currentUserRole === 'admin') return true
+    if (currentUserRole === 'moderator' && posterRoles[job.posted_by || ''] !== 'admin') return true
+    return false
+  }
 
   const jobTypeLabels: Record<string, string> = {
     full_time: 'Full-time',
@@ -98,21 +128,23 @@ export default function AdminJobList({ jobs }: AdminJobsPageProps) {
                   {job.status}
                 </span>
               </div>
-              <div className="space-x-2">
-                <button
-                  onClick={() => setEditing(job.id)}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  ✏️ Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(job.id, job.title)}
-                  disabled={deleting === job.id}
-                  className="text-red-600 hover:text-red-800 disabled:opacity-50"
-                >
-                  {deleting === job.id ? 'Deleting...' : '🗑️ Delete'}
-                </button>
-              </div>
+              {canEdit(job) && (
+                <div className="space-x-2">
+                  <button
+                    onClick={() => setEditing(job.id)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    ✏️ Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(job.id, job.title)}
+                    disabled={deleting === job.id}
+                    className="text-red-600 hover:text-red-800 disabled:opacity-50"
+                  >
+                    {deleting === job.id ? 'Deleting...' : '🗑️ Delete'}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { logActivity } from '@/lib/activity-log'
@@ -11,14 +11,33 @@ interface JobActionsProps {
   jobTitle: string
   postedBy: string | null
   currentUserId: string
-  isAdmin: boolean
+  currentUserRole: string
 }
 
-export default function JobActions({ jobId, jobTitle, postedBy, currentUserId, isAdmin }: JobActionsProps) {
+export default function JobActions({ jobId, jobTitle, postedBy, currentUserId, currentUserRole }: JobActionsProps) {
   const [deleting, setDeleting] = useState(false)
+  const [posterRole, setPosterRole] = useState<string | null>(null)
   const router = useRouter()
 
-  const canEdit = isAdmin || postedBy === currentUserId
+  useEffect(() => {
+    if (postedBy && postedBy !== currentUserId) {
+      const supabase = createClient()
+      supabase
+        .from('users')
+        .select('role')
+        .eq('id', postedBy)
+        .single()
+        .then(({ data }) => setPosterRole(data?.role || null))
+    }
+  }, [postedBy, currentUserId])
+
+  const canEdit = (() => {
+    if (!postedBy) return false
+    if (postedBy === currentUserId) return true
+    if (currentUserRole === 'admin') return true
+    if (currentUserRole === 'moderator' && posterRole !== 'admin') return true
+    return false
+  })()
 
   if (!canEdit) return null
 
