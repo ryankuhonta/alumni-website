@@ -116,7 +116,7 @@ export default function JobForm({ initialData, onSave }: JobFormProps) {
       if (onSave) {
         onSave()
       } else {
-        router.refresh()
+        router.push(`/jobs/${initialData.id}`)
       }
     } else {
       router.push('/jobs')

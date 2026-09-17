@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
+import JobActions from '@/components/jobs/JobActions'
 
 export default async function JobDetailPage({
   params,
@@ -24,6 +25,12 @@ export default async function JobDetailPage({
   if (!job) {
     notFound()
   }
+
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single()
 
   const jobTypeLabels = {
     full_time: 'Full-time',
@@ -113,6 +120,14 @@ export default async function JobDetailPage({
               <span> by {job.poster.first_name} {job.poster.last_name}</span>
             )}
           </div>
+
+          <JobActions
+            jobId={job.id}
+            jobTitle={job.title}
+            postedBy={job.posted_by}
+            currentUserId={user.id}
+            isAdmin={profile?.role === 'admin'}
+          />
         </div>
       </div>
     </div>
