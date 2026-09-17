@@ -18,7 +18,7 @@ export default async function JobDetailPage({
     .from('jobs')
     .select(`
       *,
-      poster:users!jobs_posted_by_fkey(id, first_name, last_name, avatar_url, job_title, current_company)
+      poster:users!jobs_posted_by_fkey(id, first_name, last_name, profile_picture, job_title, current_company)
     `)
     .eq('id', id)
     .single()
@@ -121,9 +121,9 @@ export default async function JobDetailPage({
             <div className="border-t pt-6 mt-6">
               <h2 className="text-xl font-bold mb-4">Posted by</h2>
               <div className="flex items-center gap-4">
-                {job.poster.avatar_url ? (
+                {job.poster.profile_picture ? (
                   <img
-                    src={job.poster.avatar_url}
+                    src={job.poster.profile_picture}
                     alt={`${job.poster.first_name} ${job.poster.last_name}`}
                     className="w-14 h-14 rounded-full object-cover"
                   />
