@@ -61,7 +61,7 @@ export default function Navbar({ siteName }: NavbarProps) {
             .select('role')
             .eq('id', session.user.id)
             .single()
-          setIsAdmin(data?.role === 'admin')
+        setIsAdmin(data?.role === 'admin' || data?.role === 'moderator')
         } else {
           setIsAdmin(false)
         }
