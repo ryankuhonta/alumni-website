@@ -10,7 +10,7 @@ interface AdminSidebarProps {
 
 const allLinks = [
   { href: '/admin', label: 'Dashboard', adminOnly: false },
-  { href: '/admin/users', label: 'Users', adminOnly: false },
+  { href: '/admin/users', label: 'Users', adminOnly: true },
   { href: '/admin/events', label: 'Events', adminOnly: false },
   { href: '/admin/announcements', label: 'Announcements', adminOnly: false },
   { href: '/admin/jobs', label: 'Opportunities', adminOnly: false },
