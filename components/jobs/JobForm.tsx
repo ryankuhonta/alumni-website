@@ -179,7 +179,9 @@ export default function JobForm({ initialData, onSave }: JobFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Description *</label>
+        <label className="block text-sm font-medium mb-1">
+          {jobType === 'service' || jobType === 'product' ? 'Description *' : 'Description *'}
+        </label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -190,18 +192,23 @@ export default function JobForm({ initialData, onSave }: JobFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Requirements</label>
+        <label className="block text-sm font-medium mb-1">
+          {jobType === 'service' || jobType === 'product' ? "What's Included" : 'Requirements'}
+        </label>
         <textarea
           value={requirements}
           onChange={(e) => setRequirements(e.target.value)}
           rows={3}
           className="w-full border rounded px-3 py-2"
+          placeholder={jobType === 'service' || jobType === 'product'
+            ? 'List services, features, or what customers can expect...'
+            : undefined}
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium mb-1">
-          Application Link
+          {jobType === 'service' || jobType === 'product' ? 'Website / Booking Link' : 'Application Link'}
         </label>
         <input
           type="url"
@@ -214,13 +221,13 @@ export default function JobForm({ initialData, onSave }: JobFormProps) {
 
       <div>
         <label className="block text-sm font-medium mb-1">
-          Application Email
+          {jobType === 'service' || jobType === 'product' ? 'Contact Email' : 'Application Email'}
         </label>
         <input
           type="email"
           value={applicationEmail}
           onChange={(e) => setApplicationEmail(e.target.value)}
-          placeholder="hr@company.com"
+          placeholder={jobType === 'service' || jobType === 'product' ? 'contact@business.com' : 'hr@company.com'}
           className="w-full border rounded px-3 py-2"
         />
       </div>

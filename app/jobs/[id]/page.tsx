@@ -74,7 +74,9 @@ export default async function JobDetailPage({
 
           {job.requirements && (
             <div className="prose max-w-none mb-8">
-              <h2 className="text-xl font-bold">Requirements</h2>
+              <h2 className="text-xl font-bold">
+                {job.job_type === 'service' || job.job_type === 'product' ? "What's Included" : 'Requirements'}
+              </h2>
               <div className="whitespace-pre-wrap">{job.requirements}</div>
             </div>
           )}
