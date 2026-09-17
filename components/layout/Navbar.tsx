@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import UnreadBadge from '@/components/messages/UnreadBadge'
 
 interface NavbarProps {
@@ -17,7 +17,6 @@ export default function Navbar({ siteName }: NavbarProps) {
   const [logoUrl, setLogoUrl] = useState('')
   const [showLogo, setShowLogo] = useState(true)
   const router = useRouter()
-  const pathname = usePathname()
 
   useEffect(() => {
     const supabase = createClient()
@@ -32,7 +31,7 @@ export default function Navbar({ siteName }: NavbarProps) {
           .select('role')
           .eq('id', user.id)
           .single()
-        setIsAdmin(data?.role === 'admin')
+        setIsAdmin(data?.role === 'admin' || data?.role === 'moderator')
       } else {
         setIsAdmin(false)
       }
@@ -61,7 +60,7 @@ export default function Navbar({ siteName }: NavbarProps) {
             .select('role')
             .eq('id', session.user.id)
             .single()
-        setIsAdmin(data?.role === 'admin' || data?.role === 'moderator')
+          setIsAdmin(data?.role === 'admin' || data?.role === 'moderator')
         } else {
           setIsAdmin(false)
         }
@@ -69,7 +68,7 @@ export default function Navbar({ siteName }: NavbarProps) {
     )
 
     return () => subscription.unsubscribe()
-  }, [pathname])
+  }, [])
 
   const handleLogout = async () => {
     const supabase = createClient()
