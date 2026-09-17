@@ -13,7 +13,7 @@ const allLinks = [
   { href: '/admin/users', label: 'Users', adminOnly: true },
   { href: '/admin/events', label: 'Events', adminOnly: false },
   { href: '/admin/announcements', label: 'Announcements', adminOnly: false },
-  { href: '/admin/jobs', label: 'Opportunities', adminOnly: false },
+  { href: '/admin/jobs', label: 'Alumni Network', adminOnly: false },
   { href: '/admin/officers', label: 'Officers', adminOnly: false },
   { href: '/admin/settings', label: 'Settings', adminOnly: true },
   { href: '/admin/activity', label: 'Activity Log', adminOnly: true },

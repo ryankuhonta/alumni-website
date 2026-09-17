@@ -141,10 +141,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Opportunities Preview */}
+      {/* Alumni Network Preview */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-4">Opportunities</h2>
+          <h2 className="text-2xl font-bold mb-4">Alumni Network</h2>
           <p className="text-gray-600 mb-8">
             Find jobs, services, and products posted by fellow alumni
           </p>
@@ -153,7 +153,7 @@ export default async function HomePage() {
             className="text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90"
             style={{ backgroundColor: 'var(--primary-color)' }}
           >
-            Browse Opportunities
+            Browse Alumni Network
           </Link>
         </div>
       </section>

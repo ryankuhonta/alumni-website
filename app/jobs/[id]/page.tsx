@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
+import Link from 'next/link'
 import JobActions from '@/components/jobs/JobActions'
 
 export default async function JobDetailPage({
@@ -17,7 +18,7 @@ export default async function JobDetailPage({
     .from('jobs')
     .select(`
       *,
-      poster:users!jobs_posted_by_fkey(first_name, last_name)
+      poster:users!jobs_posted_by_fkey(id, first_name, last_name, avatar_url, job_title, current_company)
     `)
     .eq('id', id)
     .single()
@@ -116,11 +117,46 @@ export default async function JobDetailPage({
             </div>
           )}
 
+          {job.poster && (
+            <div className="border-t pt-6 mt-6">
+              <h2 className="text-xl font-bold mb-4">Posted by</h2>
+              <div className="flex items-center gap-4">
+                {job.poster.avatar_url ? (
+                  <img
+                    src={job.poster.avatar_url}
+                    alt={`${job.poster.first_name} ${job.poster.last_name}`}
+                    className="w-14 h-14 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xl font-bold">
+                    {job.poster.first_name?.[0]}{job.poster.last_name?.[0]}
+                  </div>
+                )}
+                <div className="flex-1">
+                  <p className="font-bold text-lg">{job.poster.first_name} {job.poster.last_name}</p>
+                  {job.poster.job_title && job.poster.current_company && (
+                    <p className="text-gray-500">{job.poster.job_title} at {job.poster.current_company}</p>
+                  )}
+                  {job.poster.job_title && !job.poster.current_company && (
+                    <p className="text-gray-500">{job.poster.job_title}</p>
+                  )}
+                  {!job.poster.job_title && job.poster.current_company && (
+                    <p className="text-gray-500">{job.poster.current_company}</p>
+                  )}
+                </div>
+                <Link
+                  href={`/directory/${job.poster.id}`}
+                  className="text-white px-4 py-2 rounded hover:opacity-90"
+                  style={{ backgroundColor: 'var(--primary-color)' }}
+                >
+                  View Profile
+                </Link>
+              </div>
+            </div>
+          )}
+
           <div className="text-sm text-gray-400 mt-8">
             Posted {new Date(job.created_at).toLocaleDateString()}
-            {job.poster && (
-              <span> by {job.poster.first_name} {job.poster.last_name}</span>
-            )}
           </div>
 
           <JobActions

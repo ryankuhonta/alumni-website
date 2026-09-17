@@ -99,7 +99,7 @@ export default function Navbar({ siteName }: NavbarProps) {
               Announcements
               {user && <UnreadAnnouncementsBadge />}
             </Link>
-            {user && <Link href="/jobs">Opportunities</Link>}
+            {user && <Link href="/jobs">Alumni Network</Link>}
             {user && (
               <div className="relative">
                 <Link href="/messages">Messages</Link>

@@ -255,8 +255,8 @@ export default function JobForm({ initialData, onSave }: JobFormProps) {
         {loading
           ? 'Saving...'
           : initialData?.id
-          ? 'Update Opportunity'
-          : 'Post Opportunity'}
+          ? 'Update Post'
+          : 'Post to Alumni Network'}
       </button>
     </form>
   )

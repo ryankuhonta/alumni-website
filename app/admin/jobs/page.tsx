@@ -21,7 +21,7 @@ export default async function AdminJobsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Manage Opportunities</h1>
+      <h1 className="text-2xl font-bold mb-6">Manage Alumni Network</h1>
 
       {jobs && jobs.length > 0 ? (
         <AdminJobList
