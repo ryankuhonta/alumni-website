@@ -23,13 +23,13 @@ export default async function AdminLayout({
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') {
+  if (profile?.role !== 'admin' && profile?.role !== 'moderator') {
     redirect('/directory')
   }
 
   return (
     <div className="flex">
-      <AdminSidebar />
+      <AdminSidebar userRole={profile?.role || 'alumni'} />
       <main className="flex-1 p-8">{children}</main>
     </div>
   )

@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'alumni'
+export type UserRole = 'admin' | 'moderator' | 'alumni'
 export type UserStatus = 'approved' | 'pending' | 'rejected' | 'banned'
 export type RSVPStatus = 'going' | 'maybe' | 'not_going'
 export type JobType = 'full_time' | 'part_time' | 'contract' | 'freelance' | 'service' | 'product'

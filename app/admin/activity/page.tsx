@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import ActivityLogTable from '@/components/admin/ActivityLogTable'
 import CleanupButton from '@/components/admin/CleanupButton'
 
@@ -8,6 +9,18 @@ export default async function ActivityLogPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (profile?.role !== 'admin') redirect('/admin')
+
   const params = await searchParams
   const actionFilter = typeof params.action === 'string' ? params.action : ''
 

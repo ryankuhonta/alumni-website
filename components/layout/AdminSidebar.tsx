@@ -2,20 +2,28 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { UserRole } from '@/types/database'
 
-const links = [
-  { href: '/admin', label: 'Dashboard' },
-  { href: '/admin/users', label: 'Users' },
-  { href: '/admin/events', label: 'Events' },
-  { href: '/admin/announcements', label: 'Announcements' },
-  { href: '/admin/jobs', label: 'Opportunities' },
-  { href: '/admin/officers', label: 'Officers' },
-  { href: '/admin/settings', label: 'Settings' },
-  { href: '/admin/activity', label: 'Activity Log' },
+interface AdminSidebarProps {
+  userRole: UserRole
+}
+
+const allLinks = [
+  { href: '/admin', label: 'Dashboard', adminOnly: false },
+  { href: '/admin/users', label: 'Users', adminOnly: false },
+  { href: '/admin/events', label: 'Events', adminOnly: false },
+  { href: '/admin/announcements', label: 'Announcements', adminOnly: false },
+  { href: '/admin/jobs', label: 'Opportunities', adminOnly: false },
+  { href: '/admin/officers', label: 'Officers', adminOnly: false },
+  { href: '/admin/settings', label: 'Settings', adminOnly: true },
+  { href: '/admin/activity', label: 'Activity Log', adminOnly: true },
 ]
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ userRole }: AdminSidebarProps) {
   const pathname = usePathname()
+  const isAdmin = userRole === 'admin'
+
+  const links = allLinks.filter(link => !link.adminOnly || isAdmin)
 
   return (
     <aside className="w-64 bg-gray-800 text-white min-h-screen p-4">
