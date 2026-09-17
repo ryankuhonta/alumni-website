@@ -72,34 +72,40 @@ export default async function JobDetailPage({
             </div>
           )}
 
-          <div className="border-t pt-6">
-            <h2 className="text-xl font-bold mb-4">How to Apply</h2>
-            <div className="space-y-2">
-              {job.application_link && (
-                <a
-                  href={job.application_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block text-white px-6 py-2 rounded hover:opacity-90"
-                  style={{ backgroundColor: 'var(--primary-color)' }}
-                >
-                  Apply Now
-                </a>
-              )}
-              {job.application_email && (
-                <p className="text-gray-600">
-                  Or send your application to:{' '}
+          {(job.application_link || job.application_email) && (
+            <div className="border-t pt-6">
+              <h2 className="text-xl font-bold mb-4">
+                {job.job_type === 'service' || job.job_type === 'product' ? 'Contact' : 'How to Apply'}
+              </h2>
+              <div className="space-y-2">
+                {job.application_link && (
                   <a
-                    href={`mailto:${job.application_email}`}
-                    className="hover:underline"
-                    style={{ color: 'var(--primary-color)' }}
+                    href={job.application_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block text-white px-6 py-2 rounded hover:opacity-90"
+                    style={{ backgroundColor: 'var(--primary-color)' }}
                   >
-                    {job.application_email}
+                    {job.job_type === 'service' || job.job_type === 'product' ? 'Visit Website' : 'Apply Now'}
                   </a>
-                </p>
-              )}
+                )}
+                {job.application_email && (
+                  <p className="text-gray-600">
+                    {job.job_type === 'service' || job.job_type === 'product'
+                      ? 'Email: '
+                      : 'Or send your application to: '}
+                    <a
+                      href={`mailto:${job.application_email}`}
+                      className="hover:underline"
+                      style={{ color: 'var(--primary-color)' }}
+                    >
+                      {job.application_email}
+                    </a>
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="text-sm text-gray-400 mt-8">
             Posted {new Date(job.created_at).toLocaleDateString()}
