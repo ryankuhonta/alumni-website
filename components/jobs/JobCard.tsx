@@ -41,7 +41,7 @@ export default function JobCard({ job }: JobCardProps) {
           {jobTypeLabels[job.job_type]}
         </span>
       </div>
-      <p className="text-gray-600 mt-3 line-clamp-2">{job.description}</p>
+      <p className="text-gray-600 mt-3 line-clamp-2 whitespace-pre-wrap">{job.description}</p>
       <div className="text-sm text-gray-400 mt-3">
         Posted {new Date(job.created_at).toLocaleDateString()}
       </div>
