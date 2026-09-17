@@ -12,7 +12,10 @@ export default async function AnnouncementsPage() {
 
   const { data: announcements } = await supabase
     .from('announcements')
-    .select('*')
+    .select(`
+      *,
+      creator:users!announcements_created_by_fkey(first_name, last_name)
+    `)
     .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false })
 
@@ -25,7 +28,7 @@ export default async function AnnouncementsPage() {
 
         {announcements && announcements.length > 0 ? (
           <div className="space-y-6">
-            {announcements.map((announcement) => (
+            {announcements.map((announcement: any) => (
               <div
                 key={announcement.id}
                 className={`border rounded-lg p-6 ${
@@ -37,11 +40,17 @@ export default async function AnnouncementsPage() {
                     📌 Pinned
                   </span>
                 )}
-                <div className="text-sm text-gray-500 mb-2">
-                  {new Date(announcement.created_at).toLocaleDateString()}
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                  <span>{new Date(announcement.created_at).toLocaleDateString()}</span>
+                  {announcement.creator && (
+                    <>
+                      <span>·</span>
+                      <span>Posted by {announcement.creator.first_name} {announcement.creator.last_name}</span>
+                    </>
+                  )}
                 </div>
                 <h2 className="text-xl font-bold mb-2">{announcement.title}</h2>
-                <p className="text-gray-700 whitespace-pre-wrap">{announcement.content}</p>
+                <div className="text-gray-700 whitespace-pre-wrap">{announcement.content}</div>
                 {announcement.cover_image && (
                   <img
                     src={announcement.cover_image}
