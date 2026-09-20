@@ -159,6 +159,7 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
                   }`}
                 >
                   <option value="alumni">Alumni</option>
+                  <option value="teacher">Teacher</option>
                   <option value="moderator">Moderator</option>
                   <option value="admin">Admin</option>
                 </select>

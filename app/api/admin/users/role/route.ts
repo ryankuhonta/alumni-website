@@ -10,7 +10,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing userId or newRole' }, { status: 400 })
     }
 
-    if (!['admin', 'moderator', 'alumni'].includes(newRole)) {
+    if (!['admin', 'moderator', 'alumni', 'teacher'].includes(newRole)) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
     }
 
