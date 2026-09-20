@@ -4,13 +4,16 @@ import { useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { toTitleCase, LOCATION_DATA, REGIONS, getProvincesByRegion, formatLocation } from '@/lib/utils'
+import { UserRole } from '@/types/database'
 
 export default function RegisterForm() {
+  const [memberType, setMemberType] = useState<'alumni' | 'teacher'>('alumni')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [batchYear, setBatchYear] = useState('')
+  const [subject, setSubject] = useState('')
   const [currentCompany, setCurrentCompany] = useState('')
   const [region, setRegion] = useState('')
   const [province, setProvince] = useState('')
@@ -74,20 +77,22 @@ export default function RegisterForm() {
       }
 
       const locationValue = formatLocation(province, city)
+      const role: UserRole = memberType === 'teacher' ? 'teacher' : 'alumni'
 
       const { error: profileError } = await supabase.from('users').insert({
         id: data.user.id,
         email,
         first_name: toTitleCase(firstName),
         last_name: toTitleCase(lastName),
-        batch_year: parseInt(batchYear),
+        batch_year: memberType === 'alumni' ? parseInt(batchYear) : 0,
+        subject: memberType === 'teacher' ? toTitleCase(subject) : null,
         current_company: currentCompany || null,
         location: locationValue || null,
         mobile_number: mobileNumber || null,
         job_title: jobTitle || null,
         facebook_url: facebookUrl || null,
         linkedin_url: linkedinUrl || null,
-        role: 'alumni',
+        role,
         status: 'approved',
       })
 
@@ -107,6 +112,34 @@ export default function RegisterForm() {
       {error && (
         <div className="bg-red-100 text-red-700 p-3 rounded">{error}</div>
       )}
+
+      <div>
+        <label className="block text-sm font-medium mb-2">I am a *</label>
+        <div className="flex gap-4">
+          <label className="flex items-center space-x-2">
+            <input
+              type="radio"
+              name="memberType"
+              value="alumni"
+              checked={memberType === 'alumni'}
+              onChange={() => setMemberType('alumni')}
+              className="rounded"
+            />
+            <span>Alumni</span>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="radio"
+              name="memberType"
+              value="teacher"
+              checked={memberType === 'teacher'}
+              onChange={() => setMemberType('teacher')}
+              className="rounded"
+            />
+            <span>Teacher</span>
+          </label>
+        </div>
+      </div>
 
       <div>
         <label className="block text-sm font-medium mb-1">First Name *</label>
@@ -153,18 +186,32 @@ export default function RegisterForm() {
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">Batch Year *</label>
-        <input
-          type="number"
-          value={batchYear}
-          onChange={(e) => setBatchYear(e.target.value)}
-          required
-          min="1990"
-          max={new Date().getFullYear().toString()}
-          className="w-full border rounded px-3 py-2"
-        />
-      </div>
+      {memberType === 'alumni' ? (
+        <div>
+          <label className="block text-sm font-medium mb-1">Batch Year *</label>
+          <input
+            type="number"
+            value={batchYear}
+            onChange={(e) => setBatchYear(e.target.value)}
+            required
+            min="1990"
+            max={new Date().getFullYear().toString()}
+            className="w-full border rounded px-3 py-2"
+          />
+        </div>
+      ) : (
+        <div>
+          <label className="block text-sm font-medium mb-1">Subject / Department *</label>
+          <input
+            type="text"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            required
+            placeholder="e.g., Mathematics, English, Science"
+            className="w-full border rounded px-3 py-2"
+          />
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium mb-1">Current Company</label>

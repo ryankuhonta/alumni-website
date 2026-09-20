@@ -6,6 +6,8 @@ interface AlumniCardProps {
 }
 
 export default function AlumniCard({ user }: AlumniCardProps) {
+  const isTeacher = user.role === 'teacher'
+
   return (
     <Link
       href={`/directory/${user.id}`}
@@ -28,8 +30,17 @@ export default function AlumniCard({ user }: AlumniCardProps) {
         <div>
           <h3 className="font-bold">
             {user.first_name} {user.last_name}
+            {isTeacher && (
+              <span className="ml-2 inline-block bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">
+                Teacher
+              </span>
+            )}
           </h3>
-          <p className="text-sm" style={{ color: 'var(--primary-color)' }}>Batch {user.batch_year}</p>
+          {isTeacher ? (
+            <p className="text-sm" style={{ color: 'var(--primary-color)' }}>{user.subject || 'Teacher'}</p>
+          ) : (
+            <p className="text-sm" style={{ color: 'var(--primary-color)' }}>Batch {user.batch_year}</p>
+          )}
           {user.course && (
             <p className="text-gray-500 text-sm">{user.course}</p>
           )}

@@ -91,6 +91,7 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
     admin: 'bg-purple-100 text-purple-800',
     moderator: 'bg-green-100 text-green-800',
     alumni: 'bg-blue-100 text-blue-800',
+    teacher: 'bg-orange-100 text-orange-800',
   }
 
   return (

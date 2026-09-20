@@ -10,6 +10,7 @@ interface ProfileViewProps {
 
 export default function ProfileView({ user, currentUserId }: ProfileViewProps) {
   const isOwnProfile = currentUserId === user.id
+  const isTeacher = user.role === 'teacher'
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -32,8 +33,17 @@ export default function ProfileView({ user, currentUserId }: ProfileViewProps) {
           <div className="flex-1">
             <h1 className="text-2xl font-bold">
               {user.first_name} {user.last_name}
+              {isTeacher && (
+                <span className="ml-2 inline-block bg-blue-100 text-blue-800 text-sm px-2 py-0.5 rounded">
+                  Teacher
+                </span>
+              )}
             </h1>
-            <p style={{ color: 'var(--primary-color)' }}>Batch {user.batch_year}</p>
+            {isTeacher ? (
+              <p style={{ color: 'var(--primary-color)' }}>{user.subject || 'Teacher'}</p>
+            ) : (
+              <p style={{ color: 'var(--primary-color)' }}>Batch {user.batch_year}</p>
+            )}
             {user.course && <p className="text-gray-600">{user.course}</p>}
           </div>
           {!isOwnProfile && currentUserId && (

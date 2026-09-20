@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'moderator' | 'alumni'
+export type UserRole = 'admin' | 'moderator' | 'alumni' | 'teacher'
 export type UserStatus = 'approved' | 'pending' | 'rejected' | 'banned'
 export type RSVPStatus = 'going' | 'maybe' | 'not_going'
 export type JobType = 'full_time' | 'part_time' | 'contract' | 'freelance' | 'service' | 'product'
@@ -18,6 +18,7 @@ export interface User {
   facebook_url?: string
   linkedin_url?: string
   job_title?: string
+  subject?: string
   birthday?: string
   role: UserRole
   status: UserStatus
