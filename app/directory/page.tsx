@@ -4,8 +4,8 @@ import SearchFilter from '@/components/directory/SearchFilter'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Alumni Directory',
-  description: 'Browse and connect with fellow LDSP alumni. Find classmates by name or batch year.',
+  title: 'Directory',
+  description: 'Browse and connect with fellow LDSP alumni and teachers. Find classmates and faculty members.',
 }
 
 export default async function DirectoryPage({
@@ -17,11 +17,13 @@ export default async function DirectoryPage({
   const params = await searchParams
   const search = typeof params.search === 'string' ? params.search : ''
   const batch = typeof params.batch === 'string' ? params.batch : ''
+  const role = typeof params.role === 'string' ? params.role : ''
 
   let query = supabase
     .from('users')
     .select('*')
     .eq('status', 'approved')
+    .order('role')
     .order('batch_year', { ascending: true })
     .order('last_name', { ascending: true })
 
@@ -29,27 +31,31 @@ export default async function DirectoryPage({
     query = query.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%`)
   }
 
-  if (batch) {
+  if (batch && role !== 'teacher') {
     query = query.eq('batch_year', parseInt(batch))
   }
 
-  const { data: alumni } = await query
+  if (role && role !== 'all') {
+    query = query.eq('role', role)
+  }
+
+  const { data: members } = await query
 
   return (
     <div className="py-12">
       <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-8">Alumni Directory</h1>
+        <h1 className="text-3xl font-bold mb-8">Directory</h1>
 
         <SearchFilter />
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {alumni && alumni.length > 0 ? (
-            alumni.map((user) => (
+          {members && members.length > 0 ? (
+            members.map((user) => (
               <AlumniCard key={user.id} user={user} />
             ))
           ) : (
             <p className="text-gray-500 col-span-full">
-              No alumni found.
+              No members found.
             </p>
           )}
         </div>
