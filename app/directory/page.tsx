@@ -19,27 +19,66 @@ export default async function DirectoryPage({
   const batch = typeof params.batch === 'string' ? params.batch : ''
   const role = typeof params.role === 'string' ? params.role : ''
 
-  let query = supabase
-    .from('users')
-    .select('*')
-    .eq('status', 'approved')
-    .order('role')
-    .order('batch_year', { ascending: true })
-    .order('last_name', { ascending: true })
-
-  if (search) {
-    query = query.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%`)
+  const applySearch = (query: any) => {
+    if (search) {
+      return query.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%`)
+    }
+    return query
   }
 
-  if (batch && role !== 'teacher') {
-    query = query.eq('batch_year', parseInt(batch))
-  }
+  let members: any[] = []
 
-  if (role && role !== 'all') {
-    query = query.eq('role', role)
-  }
+  if (role === 'teacher') {
+    // Teachers only — sorted by name
+    let query = supabase
+      .from('users')
+      .select('*')
+      .eq('status', 'approved')
+      .eq('role', 'teacher')
+      .order('last_name', { ascending: true })
+    query = applySearch(query)
+    const { data } = await query
+    members = data || []
+  } else if (role === 'alumni') {
+    // Alumni only — sorted by batch, then name
+    let query = supabase
+      .from('users')
+      .select('*')
+      .eq('status', 'approved')
+      .eq('role', 'alumni')
+      .order('batch_year', { ascending: true })
+      .order('last_name', { ascending: true })
+    query = applySearch(query)
+    if (batch) {
+      query = query.eq('batch_year', parseInt(batch))
+    }
+    const { data } = await query
+    members = data || []
+  } else {
+    // All — alumni first (sorted by batch), then teachers (sorted by name)
+    let alumniQuery = supabase
+      .from('users')
+      .select('*')
+      .eq('status', 'approved')
+      .eq('role', 'alumni')
+      .order('batch_year', { ascending: true })
+      .order('last_name', { ascending: true })
+    alumniQuery = applySearch(alumniQuery)
+    if (batch) {
+      alumniQuery = alumniQuery.eq('batch_year', parseInt(batch))
+    }
 
-  const { data: members } = await query
+    let teacherQuery = supabase
+      .from('users')
+      .select('*')
+      .eq('status', 'approved')
+      .eq('role', 'teacher')
+      .order('last_name', { ascending: true })
+    teacherQuery = applySearch(teacherQuery)
+
+    const [alumniResult, teacherResult] = await Promise.all([alumniQuery, teacherQuery])
+    members = [...(alumniResult.data || []), ...(teacherResult.data || [])]
+  }
 
   return (
     <div className="py-12">
@@ -49,7 +88,7 @@ export default async function DirectoryPage({
         <SearchFilter />
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {members && members.length > 0 ? (
+          {members.length > 0 ? (
             members.map((user) => (
               <AlumniCard key={user.id} user={user} />
             ))
