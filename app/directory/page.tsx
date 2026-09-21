@@ -77,7 +77,10 @@ export default async function DirectoryPage({
     teacherQuery = applySearch(teacherQuery)
 
     const [alumniResult, teacherResult] = await Promise.all([alumniQuery, teacherQuery])
-    members = [...(alumniResult.data || []), ...(teacherResult.data || [])]
+    // Only include teachers when no batch filter (teachers have batch_year = 0)
+    members = batch
+      ? alumniResult.data || []
+      : [...(alumniResult.data || []), ...(teacherResult.data || [])]
   }
 
   return (
