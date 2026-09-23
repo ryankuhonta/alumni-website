@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useDropzone } from 'react-dropzone'
+import imageCompression from 'browser-image-compression'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { logActivity } from '@/lib/activity-log'
@@ -11,6 +13,7 @@ interface AnnouncementFormProps {
     title: string
     content: string
     is_pinned: boolean
+    cover_image?: string | null
   }
 }
 
@@ -20,8 +23,48 @@ export default function AnnouncementForm({
   const [title, setTitle] = useState(initialData?.title || '')
   const [content, setContent] = useState(initialData?.content || '')
   const [isPinned, setIsPinned] = useState(initialData?.is_pinned || false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.cover_image || null)
+  const [compressing, setCompressing] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0]
+    if (!file) return
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File too large. Max 5 MB.')
+      return
+    }
+
+    setCompressing(true)
+    try {
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true,
+      })
+      setImageFile(compressed)
+      setImagePreview(URL.createObjectURL(compressed))
+    } catch (err) {
+      console.error('Compression failed:', err)
+      alert('Failed to compress image. Please try another.')
+    }
+    setCompressing(false)
+  }, [])
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'] },
+    maxFiles: 1,
+    multiple: false,
+  })
+
+  const removeImage = () => {
+    setImageFile(null)
+    setImagePreview(null)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,10 +75,34 @@ export default function AnnouncementForm({
       data: { user },
     } = await supabase.auth.getUser()
 
+    let coverImage = initialData?.cover_image || null
+
+    // Upload image if selected
+    if (imageFile) {
+      const fileExt = imageFile.name.split('.').pop()
+      const fileName = `${Date.now()}.${fileExt}`
+      const filePath = `announcements/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('announcements')
+        .upload(filePath, imageFile, { upsert: true })
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError)
+        alert('Failed to upload image.')
+        setLoading(false)
+        return
+      }
+
+      const { data } = supabase.storage.from('announcements').getPublicUrl(filePath)
+      coverImage = data.publicUrl
+    }
+
     const data = {
       title,
       content,
       is_pinned: isPinned,
+      cover_image: coverImage,
       created_by: user!.id,
     }
 
@@ -112,6 +179,42 @@ export default function AnnouncementForm({
         />
       </div>
 
+      <div>
+        <label className="block text-sm font-medium mb-1">Cover Image</label>
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition ${
+            isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+          }`}
+        >
+          <input {...getInputProps()} />
+          {imagePreview ? (
+            <div className="space-y-3">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="max-h-48 mx-auto rounded"
+              />
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); removeImage() }}
+                className="text-red-600 hover:text-red-800 text-sm"
+              >
+                ✕ Remove image
+              </button>
+            </div>
+          ) : compressing ? (
+            <p className="text-gray-500">Compressing image...</p>
+          ) : (
+            <div className="text-gray-500">
+              <p className="text-lg mb-1">📷 Drop image here</p>
+              <p className="text-sm">— or —</p>
+              <p className="text-sm mt-1">Click to browse</p>
+            </div>
+          )}
+        </div>
+      </div>
+
       <label className="flex items-center space-x-3">
         <input
           type="checkbox"
@@ -124,11 +227,13 @@ export default function AnnouncementForm({
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || compressing}
         className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800 disabled:opacity-50"
       >
         {loading
           ? 'Saving...'
+          : compressing
+          ? 'Compressing...'
           : initialData?.id
           ? 'Update Announcement'
           : 'Create Announcement'}
