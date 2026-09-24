@@ -247,7 +247,7 @@ export default function AnnouncementForm({
           min={new Date().toISOString().split('T')[0]}
           className="w-full border rounded px-3 py-2"
         />
-        <p className="text-xs text-gray-500 mt-1">Leave blank for no expiry. Announcement will be hidden after this date.</p>
+        <p className="text-xs text-gray-500 mt-1">Leave blank for no expiry. Announcement will be hidden on this date.</p>
       </div>
 
       <button
