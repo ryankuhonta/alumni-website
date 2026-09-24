@@ -16,10 +16,12 @@ interface AnnouncementFormProps {
     cover_image?: string | null
     expires_at?: string | null
   }
+  onSave?: () => void
 }
 
 export default function AnnouncementForm({
   initialData,
+  onSave,
 }: AnnouncementFormProps) {
   const [title, setTitle] = useState(initialData?.title || '')
   const [content, setContent] = useState(initialData?.content || '')
@@ -153,6 +155,7 @@ export default function AnnouncementForm({
     setLoading(false)
     if (initialData?.id) {
       router.refresh()
+      onSave?.()
     } else {
       // Clear form after successful create to prevent duplicate posts
       setTitle('')

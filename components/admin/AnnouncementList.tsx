@@ -79,6 +79,7 @@ export default function AnnouncementList({ announcements }: AnnouncementListProp
                   cover_image: announcement.cover_image,
                   expires_at: announcement.expires_at,
                 }}
+                onSave={handleCancelEdit}
               />
               <button
                 onClick={handleCancelEdit}
