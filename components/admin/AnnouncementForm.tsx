@@ -14,6 +14,7 @@ interface AnnouncementFormProps {
     content: string
     is_pinned: boolean
     cover_image?: string | null
+    expires_at?: string | null
   }
 }
 
@@ -23,6 +24,7 @@ export default function AnnouncementForm({
   const [title, setTitle] = useState(initialData?.title || '')
   const [content, setContent] = useState(initialData?.content || '')
   const [isPinned, setIsPinned] = useState(initialData?.is_pinned || false)
+  const [expiresAt, setExpiresAt] = useState(initialData?.expires_at ? initialData.expires_at.split('T')[0] : '')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.cover_image || null)
   const [compressing, setCompressing] = useState(false)
@@ -103,6 +105,7 @@ export default function AnnouncementForm({
       content,
       is_pinned: isPinned,
       cover_image: coverImage,
+      expires_at: expiresAt ? new Date(expiresAt + 'T23:59:59').toISOString() : null,
       created_by: user!.id,
     }
 
@@ -151,7 +154,14 @@ export default function AnnouncementForm({
     if (initialData?.id) {
       router.refresh()
     } else {
-      router.push('/admin/announcements')
+      // Clear form after successful create to prevent duplicate posts
+      setTitle('')
+      setContent('')
+      setIsPinned(false)
+      setExpiresAt('')
+      setImageFile(null)
+      setImagePreview(null)
+      router.refresh()
     }
   }
 
@@ -224,6 +234,18 @@ export default function AnnouncementForm({
         />
         <span>Pin this announcement</span>
       </label>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Expiry Date (optional)</label>
+        <input
+          type="date"
+          value={expiresAt}
+          onChange={(e) => setExpiresAt(e.target.value)}
+          min={new Date().toISOString().split('T')[0]}
+          className="w-full border rounded px-3 py-2"
+        />
+        <p className="text-xs text-gray-500 mt-1">Leave blank for no expiry. Announcement will be hidden after this date.</p>
+      </div>
 
       <button
         type="submit"

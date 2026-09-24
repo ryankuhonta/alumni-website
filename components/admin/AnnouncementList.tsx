@@ -14,6 +14,8 @@ interface AnnouncementListProps {
     created_at: string
     is_pinned: boolean
     created_by: string
+    cover_image?: string | null
+    expires_at?: string | null
   }[]
 }
 
@@ -57,10 +59,15 @@ export default function AnnouncementList({ announcements }: AnnouncementListProp
     setEditing(null)
   }
 
+  const isExpired = (expires_at: string | null | undefined) => {
+    if (!expires_at) return false
+    return new Date(expires_at) < new Date()
+  }
+
   return (
     <div className="space-y-4">
       {announcements.map((announcement) => (
-        <div key={announcement.id} className="border rounded p-4">
+        <div key={announcement.id} className={`border rounded p-4 ${isExpired(announcement.expires_at) ? 'bg-gray-50 opacity-70' : ''}`}>
           {editing === announcement.id ? (
             <div>
               <AnnouncementForm
@@ -69,6 +76,8 @@ export default function AnnouncementList({ announcements }: AnnouncementListProp
                   title: announcement.title,
                   content: announcement.content,
                   is_pinned: announcement.is_pinned,
+                  cover_image: announcement.cover_image,
+                  expires_at: announcement.expires_at,
                 }}
               />
               <button
@@ -85,6 +94,10 @@ export default function AnnouncementList({ announcements }: AnnouncementListProp
                 <p className="text-sm text-gray-500">
                   {new Date(announcement.created_at).toLocaleDateString()}
                   {announcement.is_pinned && ' · 📌 Pinned'}
+                  {isExpired(announcement.expires_at) && ' · ⏰ Expired'}
+                  {!isExpired(announcement.expires_at) && announcement.expires_at && (
+                    <> · Expires {new Date(announcement.expires_at).toLocaleDateString()}</>
+                  )}
                 </p>
               </div>
               <div className="space-x-2">

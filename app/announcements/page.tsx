@@ -16,6 +16,7 @@ export default async function AnnouncementsPage() {
       *,
       creator:users!announcements_created_by_fkey(first_name, last_name)
     `)
+    .or('expires_at.is.null,expires_at.gt.' + new Date().toISOString())
     .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false })
 
