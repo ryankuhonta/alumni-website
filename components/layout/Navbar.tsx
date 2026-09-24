@@ -18,6 +18,7 @@ export default function Navbar({ siteName }: NavbarProps) {
   const [isAdmin, setIsAdmin] = useState(false)
   const [logoUrl, setLogoUrl] = useState('')
   const [showLogo, setShowLogo] = useState(true)
+  const [menuOpen, setMenuOpen] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -114,7 +115,7 @@ export default function Navbar({ siteName }: NavbarProps) {
             )}
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
                 <Link href="/dashboard" className="hover:underline">
@@ -140,7 +141,81 @@ export default function Navbar({ siteName }: NavbarProps) {
               </>
             )}
           </div>
+
+          {/* Hamburger button (mobile only) */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            className="md:hidden p-2 rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white"
+          >
+            {menuOpen ? (
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
         </div>
+
+        {/* Mobile menu panel */}
+        {menuOpen && (
+          <div className="md:hidden pb-4 space-y-1">
+            <Link href="/about" onClick={() => setMenuOpen(false)} className="block px-2 py-2 rounded hover:bg-white/10">
+              About
+            </Link>
+            {user && (
+              <Link href="/directory" onClick={() => setMenuOpen(false)} className="block px-2 py-2 rounded hover:bg-white/10">
+                Directory
+              </Link>
+            )}
+            <Link href="/events" onClick={() => setMenuOpen(false)} className="block px-2 py-2 rounded hover:bg-white/10">
+              Events
+            </Link>
+            <Link href="/announcements" onClick={() => setMenuOpen(false)} className="block px-2 py-2 rounded hover:bg-white/10">
+              Announcements {user && <UnreadAnnouncementsBadge />}
+            </Link>
+            {user && (
+              <Link href="/jobs" onClick={() => setMenuOpen(false)} className="block px-2 py-2 rounded hover:bg-white/10">
+                Alumni Network <UnreadJobsBadge />
+              </Link>
+            )}
+            {user && (
+              <Link href="/messages" onClick={() => setMenuOpen(false)} className="block px-2 py-2 rounded hover:bg-white/10">
+                Messages <UnreadBadge />
+              </Link>
+            )}
+            <div className="border-t border-white/20 pt-2 mt-2 space-y-1">
+              {user ? (
+                <>
+                  <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="block px-2 py-2 rounded hover:bg-white/10">
+                    Profile
+                  </Link>
+                  {isAdmin && (
+                    <Link href="/admin" onClick={() => setMenuOpen(false)} className="block px-2 py-2 rounded hover:bg-white/10">
+                      Admin
+                    </Link>
+                  )}
+                  <button onClick={() => { setMenuOpen(false); handleLogout() }} className="block w-full text-left px-2 py-2 rounded hover:bg-white/10">
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" onClick={() => setMenuOpen(false)} className="block px-2 py-2 rounded hover:bg-white/10">
+                    Login
+                  </Link>
+                  <Link href="/register" onClick={() => setMenuOpen(false)} className="block px-2 py-2 rounded hover:bg-white/10 font-semibold">
+                    Register
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )

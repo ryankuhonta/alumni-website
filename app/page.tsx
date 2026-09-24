@@ -20,6 +20,7 @@ export default async function HomePage() {
   const { data: announcements } = await supabase
     .from('announcements')
     .select('*')
+    .or('expires_at.is.null,expires_at.gt.' + new Date().toISOString())
     .order('created_at', { ascending: false })
     .limit(3)
 

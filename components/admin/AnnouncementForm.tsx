@@ -177,7 +177,7 @@ export default function AnnouncementForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          className="w-full border rounded px-3 py-2"
+          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
 
@@ -188,7 +188,7 @@ export default function AnnouncementForm({
           onChange={(e) => setContent(e.target.value)}
           required
           rows={6}
-          className="w-full border rounded px-3 py-2"
+          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
 
@@ -245,7 +245,7 @@ export default function AnnouncementForm({
           value={expiresAt}
           onChange={(e) => setExpiresAt(e.target.value)}
           min={new Date().toISOString().split('T')[0]}
-          className="w-full border rounded px-3 py-2"
+          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
         <p className="text-xs text-gray-500 mt-1">Leave blank for no expiry. Announcement will be hidden on this date.</p>
       </div>
