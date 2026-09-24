@@ -107,7 +107,7 @@ export default function AnnouncementForm({
       content,
       is_pinned: isPinned,
       cover_image: coverImage,
-      expires_at: expiresAt ? new Date(expiresAt + 'T23:59:59').toISOString() : null,
+      expires_at: expiresAt ? new Date(expiresAt + 'T00:00:00').toISOString() : null,
       created_by: user!.id,
     }
 
