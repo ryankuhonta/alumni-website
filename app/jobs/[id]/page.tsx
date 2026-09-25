@@ -14,6 +14,9 @@ export default async function JobDetailPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  // Increment view count (atomic via RPC)
+  await supabase.rpc('increment_job_views', { job_id: id })
+
   const { data: job } = await supabase
     .from('jobs')
     .select(`
@@ -156,7 +159,7 @@ export default async function JobDetailPage({
           )}
 
           <div className="text-sm text-gray-400 mt-8">
-            Posted {new Date(job.created_at).toLocaleDateString()}
+            Posted {new Date(job.created_at).toLocaleDateString()} · 👁 {job.view_count ?? 0} views
           </div>
 
           <JobActions

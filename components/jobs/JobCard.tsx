@@ -43,7 +43,7 @@ export default function JobCard({ job }: JobCardProps) {
       </div>
       <p className="text-gray-600 mt-3 line-clamp-2 whitespace-pre-wrap">{job.description}</p>
       <div className="text-sm text-gray-400 mt-3">
-        Posted {new Date(job.created_at).toLocaleDateString()}
+        Posted {new Date(job.created_at).toLocaleDateString()} · 👁 {job.view_count ?? 0} views
       </div>
     </Link>
   )
