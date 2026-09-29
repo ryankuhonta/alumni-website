@@ -40,12 +40,12 @@ export default async function DirectoryPage({
     const { data } = await query
     members = data || []
   } else if (role === 'alumni') {
-    // Alumni only — sorted by batch, then name
+    // Alumni only (includes admins/moderators) — sorted by batch, then name
     let query = supabase
       .from('users')
       .select('*')
       .eq('status', 'approved')
-      .eq('role', 'alumni')
+      .in('role', ['alumni', 'admin', 'moderator'])
       .order('batch_year', { ascending: true })
       .order('last_name', { ascending: true })
     query = applySearch(query)
@@ -55,12 +55,12 @@ export default async function DirectoryPage({
     const { data } = await query
     members = data || []
   } else {
-    // All — alumni first (sorted by batch), then teachers (sorted by name)
+    // All — alumni first (includes admins/moderators, sorted by batch), then teachers (sorted by name)
     let alumniQuery = supabase
       .from('users')
       .select('*')
       .eq('status', 'approved')
-      .eq('role', 'alumni')
+      .in('role', ['alumni', 'admin', 'moderator'])
       .order('batch_year', { ascending: true })
       .order('last_name', { ascending: true })
     alumniQuery = applySearch(alumniQuery)
