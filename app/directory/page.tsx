@@ -26,6 +26,21 @@ export default async function DirectoryPage({
     return query
   }
 
+  // Total counts per group (for tab badges)
+  const [{ count: alumniCount }, { count: teacherCount }] = await Promise.all([
+    supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'approved')
+      .in('role', ['alumni', 'admin', 'moderator']),
+    supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'approved')
+      .eq('role', 'teacher'),
+  ])
+  const totalCount = (alumniCount || 0) + (teacherCount || 0)
+
   let members: any[] = []
 
   if (role === 'teacher') {
@@ -88,9 +103,13 @@ export default async function DirectoryPage({
       <div className="max-w-7xl mx-auto px-4">
         <h1 className="text-3xl font-bold mb-8">Directory</h1>
 
-        <SearchFilter />
+        <SearchFilter alumniCount={alumniCount || 0} teacherCount={teacherCount || 0} />
 
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <p className="text-sm text-gray-500 mt-4">
+          Showing {members.length} of {totalCount} members
+        </p>
+
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {members.length > 0 ? (
             members.map((user) => (
               <AlumniCard key={user.id} user={user} />

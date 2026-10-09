@@ -3,7 +3,12 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
-export default function SearchFilter() {
+interface SearchFilterProps {
+  alumniCount?: number
+  teacherCount?: number
+}
+
+export default function SearchFilter({ alumniCount = 0, teacherCount = 0 }: SearchFilterProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [search, setSearch] = useState(searchParams.get('search') || '')
@@ -27,9 +32,9 @@ export default function SearchFilter() {
   }
 
   const tabs = [
-    { key: 'all', label: 'All' },
-    { key: 'alumni', label: 'Alumni' },
-    { key: 'teacher', label: 'Teachers' },
+    { key: 'all', label: `All (${alumniCount + teacherCount})` },
+    { key: 'alumni', label: `Alumni (${alumniCount})` },
+    { key: 'teacher', label: `Teachers (${teacherCount})` },
   ]
 
   return (
