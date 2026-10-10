@@ -156,8 +156,9 @@ export default function EventForm({ initialData, onSave }: EventFormProps) {
 
     setLoading(false)
     if (initialData?.id) {
-      router.refresh()
       onSave?.()
+      router.push('/admin/events')
+      router.refresh()
     } else {
       // Clear form after successful create to prevent duplicate posts
       setTitle('')
