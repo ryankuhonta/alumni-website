@@ -86,8 +86,16 @@ export default async function HomePage() {
                 <Link
                   key={event.id}
                   href={`/events/${event.id}`}
-                  className="border rounded-lg p-6 hover:shadow-lg transition"
+                  className="border rounded-lg overflow-hidden hover:shadow-lg transition"
                 >
+                  {event.cover_image && (
+                    <img
+                      src={event.cover_image}
+                      alt={event.title}
+                      className="w-full h-48 object-cover"
+                    />
+                  )}
+                  <div className="p-6">
                   <div style={{ color: 'var(--primary-color)' }} className="font-semibold">
                     {new Date(event.event_date).toLocaleDateString()}
                   </div>
@@ -100,6 +108,7 @@ export default async function HomePage() {
                       {event.venue}
                     </p>
                   )}
+                  </div>
                 </Link>
               ))}
             </div>
