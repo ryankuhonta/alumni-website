@@ -43,6 +43,13 @@ export default async function EventDetailPage({
   const goingCount = rsvpCounts?.filter((r) => r.status === 'going').length || 0
   const maybeCount = rsvpCounts?.filter((r) => r.status === 'maybe').length || 0
 
+  const formatTime = (t: string) => {
+    const [h, m] = t.split(':').map(Number)
+    const ampm = h >= 12 ? 'PM' : 'AM'
+    const hr = h % 12 || 12
+    return `${hr}:${String(m).padStart(2, '0')} ${ampm}`
+  }
+
   return (
     <div className="py-12">
       <div className="max-w-4xl mx-auto px-4">
@@ -50,7 +57,7 @@ export default async function EventDetailPage({
           <img
             src={event.cover_image}
             alt={event.title}
-            className="w-full h-64 object-cover rounded-lg mb-8"
+            className="w-full h-auto max-h-[600px] object-contain rounded-lg mb-8 bg-gray-50"
           />
         )}
 
@@ -63,7 +70,7 @@ export default async function EventDetailPage({
             month: 'long',
             day: 'numeric',
           })}
-          {event.event_time && ` at ${event.event_time}`}
+          {event.event_time && ` at ${formatTime(event.event_time)}`}
         </div>
 
         {event.venue && (
