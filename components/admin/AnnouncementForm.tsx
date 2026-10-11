@@ -19,6 +19,12 @@ interface AnnouncementFormProps {
   onSave?: () => void
 }
 
+const defaultExpiry = () => {
+  const d = new Date()
+  d.setDate(d.getDate() + 30)
+  return d.toISOString().split('T')[0]
+}
+
 export default function AnnouncementForm({
   initialData,
   onSave,
@@ -26,7 +32,10 @@ export default function AnnouncementForm({
   const [title, setTitle] = useState(initialData?.title || '')
   const [content, setContent] = useState(initialData?.content || '')
   const [isPinned, setIsPinned] = useState(initialData?.is_pinned || false)
-  const [expiresAt, setExpiresAt] = useState(initialData?.expires_at ? initialData.expires_at.split('T')[0] : '')
+  // New posts default to 30 days expiry; edits keep existing value (blank = never expires)
+  const [expiresAt, setExpiresAt] = useState(
+    initialData ? (initialData.expires_at ? initialData.expires_at.split('T')[0] : '') : defaultExpiry()
+  )
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.cover_image || null)
   const [compressing, setCompressing] = useState(false)
@@ -247,7 +256,7 @@ export default function AnnouncementForm({
           min={new Date().toISOString().split('T')[0]}
           className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
-        <p className="text-xs text-gray-500 mt-1">Leave blank for no expiry. Announcement will be hidden on this date.</p>
+        <p className="text-xs text-gray-500 mt-1">Defaults to 30 days from now. Clear for no expiry. Announcement will be hidden on this date.</p>
       </div>
 
       <button
