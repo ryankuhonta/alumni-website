@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import JobActions from '@/components/jobs/JobActions'
+import LikeButton from '@/components/jobs/LikeButton'
 
 export default async function JobDetailPage({
   params,
@@ -21,7 +22,8 @@ export default async function JobDetailPage({
     .from('jobs')
     .select(`
       *,
-      poster:users!jobs_posted_by_fkey(id, first_name, last_name, profile_picture, job_title, current_company)
+      poster:users!jobs_posted_by_fkey(id, first_name, last_name, profile_picture, job_title, current_company),
+      job_likes(count)
     `)
     .eq('id', id)
     .single()
@@ -158,8 +160,9 @@ export default async function JobDetailPage({
             </div>
           )}
 
-          <div className="text-sm text-gray-400 mt-8">
-            Posted {new Date(job.created_at).toLocaleDateString()} · 👁 {job.view_count ?? 0} views
+          <div className="text-sm text-gray-400 mt-8 flex items-center gap-3">
+            <span>Posted {new Date(job.created_at).toLocaleDateString()} · 👁 {job.view_count ?? 0} views</span>
+            <LikeButton jobId={job.id} initialCount={job.job_likes?.[0]?.count || 0} />
           </div>
 
           <JobActions

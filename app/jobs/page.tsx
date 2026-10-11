@@ -18,7 +18,7 @@ export default async function JobsPage() {
 
   const { data: jobs } = await supabase
     .from('jobs')
-    .select('*')
+    .select('*, job_likes(count)')
     .eq('status', 'active')
     .order('created_at', { ascending: false })
 

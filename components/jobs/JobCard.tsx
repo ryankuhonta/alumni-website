@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { Job } from '@/types/database'
+import LikeButton from '@/components/jobs/LikeButton'
 
 interface JobCardProps {
-  job: Job
+  job: Job & { job_likes?: { count: number }[] }
 }
 
 export default function JobCard({ job }: JobCardProps) {
@@ -42,8 +43,9 @@ export default function JobCard({ job }: JobCardProps) {
         </span>
       </div>
       <p className="text-gray-600 mt-3 line-clamp-2 whitespace-pre-wrap">{job.description}</p>
-      <div className="text-sm text-gray-400 mt-3">
-        Posted {new Date(job.created_at).toLocaleDateString()} · 👁 {job.view_count ?? 0} views
+      <div className="text-sm text-gray-400 mt-3 flex items-center gap-3">
+        <span>Posted {new Date(job.created_at).toLocaleDateString()} · 👁 {job.view_count ?? 0} views</span>
+        <LikeButton jobId={job.id} initialCount={job.job_likes?.[0]?.count || 0} />
       </div>
     </Link>
   )
