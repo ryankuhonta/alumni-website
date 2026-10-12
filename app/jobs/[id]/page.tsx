@@ -22,8 +22,7 @@ export default async function JobDetailPage({
     .from('jobs')
     .select(`
       *,
-      poster:users!jobs_posted_by_fkey(id, first_name, last_name, profile_picture, job_title, current_company),
-      job_likes(count)
+      poster:users!jobs_posted_by_fkey(id, first_name, last_name, profile_picture, job_title, current_company)
     `)
     .eq('id', id)
     .single()
