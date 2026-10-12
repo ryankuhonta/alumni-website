@@ -66,6 +66,8 @@ export default function LikeButton({ jobId, initialCount = 0 }: LikeButtonProps)
         .eq('job_id', jobId)
         .eq('user_id', user.id)
       if (error) {
+        console.error('Unlike failed:', error)
+        alert('Unlike failed: ' + error.message)
         setLiked(prevLiked)
         setCount(prevCount)
       }
@@ -74,6 +76,8 @@ export default function LikeButton({ jobId, initialCount = 0 }: LikeButtonProps)
         .from('job_likes')
         .insert({ job_id: jobId, user_id: user.id })
       if (error) {
+        console.error('Like failed:', error)
+        alert('Like failed: ' + error.message)
         setLiked(prevLiked)
         setCount(prevCount)
       }
