@@ -62,6 +62,7 @@ export interface Announcement {
   title: string
   content: string
   cover_image?: string
+  images?: string[]
   is_pinned: boolean
   created_by: string
   created_at: string
@@ -117,5 +118,6 @@ export interface OrganizationInfo {
   show_facebook?: boolean
   show_instagram?: boolean
   show_linkedin?: boolean
+  max_announcement_images?: number
   updated_at: string
 }

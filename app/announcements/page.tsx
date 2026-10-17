@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import MarkAnnouncementsViewed from '@/components/announcements/MarkAnnouncementsViewed'
+import ImageGallery from '@/components/announcements/ImageGallery'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -52,13 +53,16 @@ export default async function AnnouncementsPage() {
                 </div>
                 <h2 className="text-xl font-bold mb-2">{announcement.title}</h2>
                 <div className="text-gray-700 whitespace-pre-wrap">{announcement.content}</div>
-                {announcement.cover_image && (
-                  <img
-                    src={announcement.cover_image}
-                    alt={announcement.title}
-                    className="mt-4 rounded max-h-64 object-cover"
-                  />
-                )}
+                <ImageGallery
+                  images={
+                    announcement.images?.length
+                      ? announcement.images
+                      : announcement.cover_image
+                      ? [announcement.cover_image]
+                      : []
+                  }
+                  alt={announcement.title}
+                />
               </div>
             ))}
           </div>

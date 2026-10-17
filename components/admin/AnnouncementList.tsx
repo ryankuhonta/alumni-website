@@ -15,11 +15,13 @@ interface AnnouncementListProps {
     is_pinned: boolean
     created_by: string
     cover_image?: string | null
+    images?: string[] | null
     expires_at?: string | null
   }[]
+  maxImages?: number
 }
 
-export default function AnnouncementList({ announcements }: AnnouncementListProps) {
+export default function AnnouncementList({ announcements, maxImages = 1 }: AnnouncementListProps) {
   const [deleting, setDeleting] = useState<string | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
   const router = useRouter()
@@ -77,8 +79,10 @@ export default function AnnouncementList({ announcements }: AnnouncementListProp
                   content: announcement.content,
                   is_pinned: announcement.is_pinned,
                   cover_image: announcement.cover_image,
+                  images: announcement.images,
                   expires_at: announcement.expires_at,
                 }}
+                maxImages={maxImages}
                 onSave={handleCancelEdit}
               />
               <button

@@ -43,6 +43,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
   const [showFacebook, setShowFacebook] = useState(initialData?.show_facebook ?? false)
   const [showInstagram, setShowInstagram] = useState(initialData?.show_instagram ?? false)
   const [showLinkedin, setShowLinkedin] = useState(initialData?.show_linkedin ?? false)
+  const [maxAnnouncementImages, setMaxAnnouncementImages] = useState(initialData?.max_announcement_images || 1)
 
   const colorChoices = [
     { label: 'Blue', value: '#1e40af' },
@@ -127,6 +128,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
       show_facebook: showFacebook,
       show_instagram: showInstagram,
       show_linkedin: showLinkedin,
+      max_announcement_images: maxAnnouncementImages,
     }
 
     let error = null
@@ -225,6 +227,10 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
         if (showLinkedin !== initialData.show_linkedin) {
           before.show_linkedin = initialData.show_linkedin
           changes.show_linkedin = showLinkedin
+        }
+        if (maxAnnouncementImages !== initialData.max_announcement_images) {
+          before.max_announcement_images = initialData.max_announcement_images
+          changes.max_announcement_images = maxAnnouncementImages
         }
 
         if (Object.keys(changes).length > 0) {
@@ -494,6 +500,26 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
             disabled={!showLinkedin}
             className="w-full border rounded px-3 py-2 disabled:bg-gray-100"
           />
+        </div>
+      </div>
+
+      {/* Announcement Settings */}
+      <div className="border-t pt-6 mt-6">
+        <h3 className="text-lg font-semibold mb-4">Announcement Settings</h3>
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Max images per announcement
+          </label>
+          <select
+            value={maxAnnouncementImages}
+            onChange={(e) => setMaxAnnouncementImages(parseInt(e.target.value))}
+            className="border rounded px-3 py-2"
+          >
+            {[1, 2, 3, 4, 5].map((n) => (
+              <option key={n} value={n}>{n} image{n > 1 ? 's' : ''}</option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">How many images admins can attach to a single announcement (1-5). First image is the cover.</p>
         </div>
       </div>
 
