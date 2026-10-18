@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useMemo, useEffect } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@/types/database'
 import { toTitleCase, LOCATION_DATA, REGIONS, getProvincesByRegion, formatLocation, parseLocation3Level } from '@/lib/utils'
@@ -10,14 +10,16 @@ interface DashboardFormProps {
 }
 
 export default function DashboardForm({ profile }: DashboardFormProps) {
+  const parsed = profile.location ? parseLocation3Level(profile.location) : { region: '', province: '', city: '' }
+
   const [firstName, setFirstName] = useState(profile.first_name)
   const [lastName, setLastName] = useState(profile.last_name)
   const [currentCompany, setCurrentCompany] = useState(
     profile.current_company || ''
   )
-  const [region, setRegion] = useState('')
-  const [province, setProvince] = useState('')
-  const [city, setCity] = useState('')
+  const [region, setRegion] = useState(parsed.region)
+  const [province, setProvince] = useState(parsed.province)
+  const [city, setCity] = useState(parsed.city)
   const [mobileNumber, setMobileNumber] = useState(profile.mobile_number || '')
   const [jobTitle, setJobTitle] = useState(profile.job_title || '')
   const [facebookUrl, setFacebookUrl] = useState(profile.facebook_url || '')
@@ -34,16 +36,6 @@ export default function DashboardForm({ profile }: DashboardFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  // Parse existing location on mount
-  useEffect(() => {
-    if (profile.location) {
-      const parsed = parseLocation3Level(profile.location)
-      setRegion(parsed.region)
-      setProvince(parsed.province)
-      setCity(parsed.city)
-    }
-  }, [profile.location])
 
   const provincesInRegion = useMemo(() => {
     if (!region) return []

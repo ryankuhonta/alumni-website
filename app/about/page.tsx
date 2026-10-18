@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import Image from 'next/image'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -34,17 +35,21 @@ export default async function AboutPage() {
         {(orgInfo?.show_logo_about && orgInfo?.school_logo_url) || (orgInfo?.show_alumni_logo_about && orgInfo?.logo_url) ? (
           <div className="flex items-center justify-center gap-8 mb-12">
             {orgInfo?.show_alumni_logo_about && orgInfo?.logo_url && (
-              <img
+              <Image
                 src={orgInfo.logo_url}
                 alt="Alumni Logo"
-                className="h-40 object-contain"
+                width={200}
+                height={160}
+                className="object-contain"
               />
             )}
             {orgInfo?.show_logo_about && orgInfo?.school_logo_url && (
-              <img
+              <Image
                 src={orgInfo.school_logo_url}
                 alt="School Logo"
-                className="h-40 object-contain"
+                width={200}
+                height={160}
+                className="object-contain"
               />
             )}
           </div>
@@ -90,9 +95,11 @@ export default async function AboutPage() {
                 <div key={officer.id} className="text-center">
                   <div className="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden">
                     {photoUrl ? (
-                      <img
+                      <Image
                         src={photoUrl}
                         alt={officer.name}
+                        width={128}
+                        height={128}
                         className="w-full h-full object-cover"
                       />
                     ) : (

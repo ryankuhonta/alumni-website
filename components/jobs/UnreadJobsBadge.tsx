@@ -1,17 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 export default function UnreadJobsBadge() {
   const [count, setCount] = useState(0)
 
-  useEffect(() => {
-    fetchCount()
-    const interval = setInterval(fetchCount, 30000)
-    return () => clearInterval(interval)
-  }, [])
-
-  const fetchCount = async () => {
+  const fetchCount = useCallback(async () => {
     try {
       const res = await fetch('/api/jobs/unread-count')
       const data = await res.json()
@@ -19,7 +13,13 @@ export default function UnreadJobsBadge() {
     } catch (error) {
       console.error('Failed to fetch unread count:', error)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchCount()
+    const interval = setInterval(fetchCount, 30000)
+    return () => clearInterval(interval)
+  }, [fetchCount])
 
   if (count === 0) return null
 

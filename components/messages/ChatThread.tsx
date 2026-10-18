@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { MessageWithSender } from '@/types/messaging'
 
 interface ChatThreadProps {
@@ -12,12 +12,7 @@ export default function ChatThread({ conversationId }: ChatThreadProps) {
   const [loading, setLoading] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    fetchMessages()
-    markAsRead()
-  }, [conversationId])
-
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       const res = await fetch(`/api/messages/${conversationId}`)
       const data = await res.json()
@@ -27,9 +22,9 @@ export default function ChatThread({ conversationId }: ChatThreadProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [conversationId])
 
-  const markAsRead = async () => {
+  const markAsRead = useCallback(async () => {
     try {
       await fetch('/api/messages/read', {
         method: 'POST',
@@ -39,7 +34,12 @@ export default function ChatThread({ conversationId }: ChatThreadProps) {
     } catch (error) {
       console.error('Failed to mark as read:', error)
     }
-  }
+  }, [conversationId])
+
+  useEffect(() => {
+    fetchMessages()
+    markAsRead()
+  }, [fetchMessages, markAsRead])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

@@ -2,6 +2,11 @@ import { createClient } from '@/lib/supabase/server'
 import MarkAnnouncementsViewed from '@/components/announcements/MarkAnnouncementsViewed'
 import ImageGallery from '@/components/announcements/ImageGallery'
 import type { Metadata } from 'next'
+import type { Announcement, User } from '@/types/database'
+
+type AnnouncementWithCreator = Announcement & {
+  creator?: Pick<User, 'first_name' | 'last_name'> | null
+}
 
 export const metadata: Metadata = {
   title: 'Announcements',
@@ -30,7 +35,7 @@ export default async function AnnouncementsPage() {
 
         {announcements && announcements.length > 0 ? (
           <div className="space-y-6">
-            {announcements.map((announcement: any) => (
+            {announcements.map((announcement: AnnouncementWithCreator) => (
               <div
                 key={announcement.id}
                 className={`border rounded-lg p-6 ${

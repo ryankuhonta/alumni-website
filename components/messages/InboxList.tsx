@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { ConversationWithDetails } from '@/types/messaging'
 
@@ -8,11 +8,7 @@ export default function InboxList() {
   const [conversations, setConversations] = useState<ConversationWithDetails[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchConversations()
-  }, [])
-
-  const fetchConversations = async () => {
+  const fetchConversations = useCallback(async () => {
     try {
       const res = await fetch('/api/messages/conversations')
       const data = await res.json()
@@ -25,7 +21,11 @@ export default function InboxList() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchConversations()
+  }, [fetchConversations])
 
   if (loading) {
     return <div className="text-center py-8 text-gray-500">Loading conversations...</div>

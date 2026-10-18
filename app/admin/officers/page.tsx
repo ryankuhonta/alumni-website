@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Officer } from '@/types/database'
 import OfficerForm from '@/components/admin/OfficerForm'
@@ -10,19 +10,19 @@ export default function AdminOfficersPage() {
   const [officers, setOfficers] = useState<Officer[]>([])
   const [showForm, setShowForm] = useState(false)
   const [editingOfficer, setEditingOfficer] = useState<Officer | null>(null)
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
-  const fetchOfficers = async () => {
+  const fetchOfficers = useCallback(async () => {
     const { data } = await supabase
       .from('officers')
       .select('*')
       .order('display_order', { ascending: true })
     setOfficers(data || [])
-  }
+  }, [supabase])
 
   useEffect(() => {
     fetchOfficers()
-  }, [])
+  }, [fetchOfficers])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this officer?')) return
