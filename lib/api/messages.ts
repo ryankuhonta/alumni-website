@@ -1,6 +1,35 @@
 import { createClient } from '@/lib/supabase/server'
 import { ConversationWithDetails, MessageWithSender } from '@/types/messaging'
 
+interface ConversationRow {
+  id: string
+  created_at: string
+  updated_at: string
+  other_user_id: string
+  other_first_name: string
+  other_last_name: string
+  other_profile_picture: string | null
+  last_message_content: string
+  last_message_created_at: string
+  last_message_sender_id: string
+  unread_count: number | string
+}
+
+interface SenderRow {
+  first_name: string
+  last_name: string
+  profile_picture: string | null
+}
+
+interface MessageRow {
+  id: string
+  conversation_id: string
+  sender_id: string
+  content: string
+  created_at: string
+  sender: SenderRow | SenderRow[] | null
+}
+
 export async function getOrCreateConversation(recipientId: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -42,11 +71,8 @@ export async function sendMessage(content: string, conversationId?: string, reci
 
   if (error) throw error
 
-  // Update conversation updated_at
-  await supabase
-    .from('conversations')
-    .update({ updated_at: new Date().toISOString() })
-    .eq('id', conversationId)
+  // conversations.updated_at is maintained by the messages_touch_conversation
+  // trigger (migration 025), so no extra UPDATE is needed here.
 
   return { conversationId }
 }
@@ -56,89 +82,34 @@ export async function getConversations(): Promise<ConversationWithDetails[]> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
-  // Get all conversations user is in
-  const { data: participants } = await supabase
-    .from('conversation_participants')
-    .select('conversation_id')
-    .eq('user_id', user.id)
+  // Single round trip: other participant, last message and unread count are
+  // joined inside the database (migration 025).
+  const { data, error } = await supabase.rpc('get_conversations')
 
-  if (!participants || participants.length === 0) return []
-
-  const conversationIds = participants.map(p => p.conversation_id)
-
-  // Get conversations with details
-  const { data: conversations } = await supabase
-    .from('conversations')
-    .select('*')
-    .in('id', conversationIds)
-    .order('updated_at', { ascending: false })
-
-  if (!conversations) return []
-
-  // Get other user and last message for each conversation
-  const results: ConversationWithDetails[] = []
-
-  for (const conv of conversations) {
-    // Get other participant
-    const { data: otherParticipant } = await supabase
-      .from('conversation_participants')
-      .select('user_id')
-      .eq('conversation_id', conv.id)
-      .neq('user_id', user.id)
-      .single()
-
-    if (!otherParticipant) continue
-
-    // Get other user details
-    const { data: otherUser } = await supabase
-      .from('users')
-      .select('id, first_name, last_name, profile_picture')
-      .eq('id', otherParticipant.user_id)
-      .single()
-
-    if (!otherUser) continue
-
-    // Get last message
-    const { data: lastMessage } = await supabase
-      .from('messages')
-      .select('content, created_at, sender_id')
-      .eq('conversation_id', conv.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-
-    // Skip conversations with no messages (empty conversations)
-    if (!lastMessage) continue
-
-    // Get unread count
-    const { data: myParticipant } = await supabase
-      .from('conversation_participants')
-      .select('last_read_at')
-      .eq('conversation_id', conv.id)
-      .eq('user_id', user.id)
-      .single()
-
-    let unreadCount = 0
-    if (myParticipant && lastMessage) {
-      const { count } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('conversation_id', conv.id)
-        .neq('sender_id', user.id)
-        .gt('created_at', myParticipant.last_read_at)
-
-      unreadCount = count || 0
-    }
-
-    results.push({
-      ...conv,
-      otherUser,
-      lastMessage,
-      unreadCount,
-    })
+  if (error) {
+    console.error('get_conversations error:', JSON.stringify(error))
+    throw new Error(error.message || 'Failed to get conversations')
   }
 
-  return results
+  return ((data ?? []) as ConversationRow[]).map((row) => ({
+    id: row.id,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    otherUser: {
+      id: row.other_user_id,
+      first_name: row.other_first_name,
+      last_name: row.other_last_name,
+      profile_picture: row.other_profile_picture,
+    },
+    lastMessage: row.last_message_created_at
+      ? {
+          content: row.last_message_content,
+          created_at: row.last_message_created_at,
+          sender_id: row.last_message_sender_id,
+        }
+      : null,
+    unreadCount: Number(row.unread_count ?? 0),
+  }))
 }
 
 export async function getMessages(conversationId: string): Promise<MessageWithSender[]> {
@@ -156,33 +127,33 @@ export async function getMessages(conversationId: string): Promise<MessageWithSe
 
   if (!participant) throw new Error('Not authorized')
 
-  // Get messages
-  const { data: messages } = await supabase
+  // Sender details are embedded in the same query instead of one query per
+  // message.
+  const { data: messages, error } = await supabase
     .from('messages')
-    .select('*')
+    .select('id, conversation_id, sender_id, content, created_at, sender:users(first_name, last_name, profile_picture)')
     .eq('conversation_id', conversationId)
     .order('created_at', { ascending: true })
 
-  if (!messages) return []
-
-  // Get sender details
-  const results: MessageWithSender[] = []
-
-  for (const msg of messages) {
-    const { data: sender } = await supabase
-      .from('users')
-      .select('first_name, last_name, profile_picture')
-      .eq('id', msg.sender_id)
-      .single()
-
-    results.push({
-      ...msg,
-      isOwn: msg.sender_id === user.id,
-      sender: sender || { first_name: 'Unknown', last_name: '', profile_picture: null },
-    })
+  if (error) {
+    console.error('getMessages error:', JSON.stringify(error))
+    throw new Error(error.message || 'Failed to get messages')
   }
 
-  return results
+  if (!messages) return []
+
+  return (messages as MessageRow[]).map((msg) => {
+    const sender = Array.isArray(msg.sender) ? msg.sender[0] : msg.sender
+
+    return {
+      id: msg.id,
+      sender_id: msg.sender_id,
+      content: msg.content,
+      created_at: msg.created_at,
+      isOwn: msg.sender_id === user.id,
+      sender: sender || { first_name: 'Unknown', last_name: '', profile_picture: null },
+    }
+  })
 }
 
 export async function markAsRead(conversationId: string) {
@@ -202,26 +173,13 @@ export async function getUnreadCount(): Promise<number> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return 0
 
-  // Get all conversations user is in
-  const { data: participants } = await supabase
-    .from('conversation_participants')
-    .select('conversation_id, last_read_at')
-    .eq('user_id', user.id)
+  // Single aggregate query (migration 025).
+  const { data, error } = await supabase.rpc('get_unread_message_count')
 
-  if (!participants || participants.length === 0) return 0
-
-  let totalUnread = 0
-
-  for (const p of participants) {
-    const { count } = await supabase
-      .from('messages')
-      .select('*', { count: 'exact', head: true })
-      .eq('conversation_id', p.conversation_id)
-      .neq('sender_id', user.id)
-      .gt('created_at', p.last_read_at)
-
-    totalUnread += count || 0
+  if (error) {
+    console.error('get_unread_message_count error:', JSON.stringify(error))
+    return 0
   }
 
-  return totalUnread
+  return Number(data ?? 0)
 }
