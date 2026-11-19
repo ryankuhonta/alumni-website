@@ -30,6 +30,25 @@ interface MessageRow {
   sender: SenderRow | SenderRow[] | null
 }
 
+const MESSAGE_COLUMNS =
+  'id, conversation_id, sender_id, content, created_at, sender:users(first_name, last_name, profile_picture)'
+
+const DEFAULT_PAGE_SIZE = 50
+const MAX_PAGE_SIZE = 100
+
+function mapMessageRow(row: MessageRow, currentUserId: string): MessageWithSender {
+  const sender = Array.isArray(row.sender) ? row.sender[0] : row.sender
+
+  return {
+    id: row.id,
+    sender_id: row.sender_id,
+    content: row.content,
+    created_at: row.created_at,
+    isOwn: row.sender_id === currentUserId,
+    sender: sender || { first_name: 'Unknown', last_name: '', profile_picture: null },
+  }
+}
+
 export async function getOrCreateConversation(recipientId: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -61,20 +80,22 @@ export async function sendMessage(content: string, conversationId?: string, reci
     conversationId = data
   }
 
-  const { error } = await supabase
+  const { data: inserted, error } = await supabase
     .from('messages')
     .insert({
       conversation_id: conversationId,
       sender_id: user.id,
       content,
     })
+    .select(MESSAGE_COLUMNS)
+    .single()
 
   if (error) throw error
 
   // conversations.updated_at is maintained by the messages_touch_conversation
   // trigger (migration 025), so no extra UPDATE is needed here.
 
-  return { conversationId }
+  return { conversationId, message: mapMessageRow(inserted as MessageRow, user.id) }
 }
 
 export async function getConversations(): Promise<ConversationWithDetails[]> {
@@ -112,7 +133,10 @@ export async function getConversations(): Promise<ConversationWithDetails[]> {
   }))
 }
 
-export async function getMessages(conversationId: string): Promise<MessageWithSender[]> {
+export async function getMessages(
+  conversationId: string,
+  options?: { before?: string | null; limit?: number }
+): Promise<{ messages: MessageWithSender[]; hasMore: boolean }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
@@ -127,33 +151,37 @@ export async function getMessages(conversationId: string): Promise<MessageWithSe
 
   if (!participant) throw new Error('Not authorized')
 
-  // Sender details are embedded in the same query instead of one query per
-  // message.
-  const { data: messages, error } = await supabase
+  const limit = Math.min(Math.max(options?.limit ?? DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE)
+
+  // Newest page first so we can walk backwards with the keyset cursor, then
+  // reverse it for display. Fetch one extra row to know if more exist.
+  let query = supabase
     .from('messages')
-    .select('id, conversation_id, sender_id, content, created_at, sender:users(first_name, last_name, profile_picture)')
+    .select(MESSAGE_COLUMNS)
     .eq('conversation_id', conversationId)
-    .order('created_at', { ascending: true })
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
+    .limit(limit + 1)
+
+  if (options?.before) {
+    query = query.lt('created_at', options.before)
+  }
+
+  const { data, error } = await query
 
   if (error) {
     console.error('getMessages error:', JSON.stringify(error))
     throw new Error(error.message || 'Failed to get messages')
   }
 
-  if (!messages) return []
+  const rows = (data ?? []) as MessageRow[]
+  const hasMore = rows.length > limit
+  const page = hasMore ? rows.slice(0, limit) : rows
 
-  return (messages as MessageRow[]).map((msg) => {
-    const sender = Array.isArray(msg.sender) ? msg.sender[0] : msg.sender
-
-    return {
-      id: msg.id,
-      sender_id: msg.sender_id,
-      content: msg.content,
-      created_at: msg.created_at,
-      isOwn: msg.sender_id === user.id,
-      sender: sender || { first_name: 'Unknown', last_name: '', profile_picture: null },
-    }
-  })
+  return {
+    messages: page.reverse().map((row) => mapMessageRow(row, user.id)),
+    hasMore,
+  }
 }
 
 export async function markAsRead(conversationId: string) {

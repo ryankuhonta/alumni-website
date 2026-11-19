@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import ChatThread from '@/components/messages/ChatThread'
-import MessageInput from '@/components/messages/MessageInput'
 
 export default function ConversationPage({ id }: { id: string }) {
   const [authorized, setAuthorized] = useState<boolean | null>(null)
@@ -58,10 +57,6 @@ export default function ConversationPage({ id }: { id: string }) {
       <div className="max-w-2xl mx-auto px-4">
         <div className="bg-white border rounded-lg h-[calc(100vh-200px)] flex flex-col">
           <ChatThread conversationId={id} />
-          <MessageInput
-            conversationId={id}
-            onMessageSent={() => window.location.reload()}
-          />
         </div>
       </div>
     </div>

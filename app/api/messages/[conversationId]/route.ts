@@ -7,9 +7,15 @@ export async function GET(
 ) {
   try {
     const { conversationId } = await params
-    const messages = await getMessages(conversationId)
-    return NextResponse.json({ messages })
+    const { searchParams } = new URL(request.url)
+    const before = searchParams.get('before')
+    const limitParam = Number(searchParams.get('limit'))
+    const limit = Number.isFinite(limitParam) && limitParam > 0 ? limitParam : undefined
+
+    const { messages, hasMore } = await getMessages(conversationId, { before, limit })
+    return NextResponse.json({ messages, hasMore })
   } catch (error) {
+    console.error('GET MESSAGES ERROR:', JSON.stringify(error, null, 2))
     return NextResponse.json({ error: 'Failed to get messages' }, { status: 500 })
   }
 }

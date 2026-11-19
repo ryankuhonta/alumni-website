@@ -1,30 +1,42 @@
 'use client'
 
 import { useState } from 'react'
+import { MessageWithSender } from '@/types/messaging'
 
 interface MessageInputProps {
   conversationId: string
-  onMessageSent: () => void
+  onMessageSent: (message: MessageWithSender) => void
 }
 
 export default function MessageInput({ conversationId, onMessageSent }: MessageInputProps) {
   const [content, setContent] = useState('')
   const [sending, setSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSend = async () => {
     if (!content.trim() || sending) return
 
     setSending(true)
+    setError(null)
+
     try {
-      await fetch('/api/messages/send', {
+      const res = await fetch('/api/messages/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ conversationId, content: content.trim() }),
       })
+
+      const data = await res.json().catch(() => ({}))
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to send message')
+      }
+
       setContent('')
-      onMessageSent()
-    } catch (error) {
-      console.error('Failed to send message:', error)
+      if (data.message) onMessageSent(data.message)
+    } catch (err) {
+      console.error('Failed to send message:', err)
+      setError(err instanceof Error ? err.message : 'Failed to send message')
     } finally {
       setSending(false)
     }
@@ -39,6 +51,7 @@ export default function MessageInput({ conversationId, onMessageSent }: MessageI
 
   return (
     <div className="border-t p-4">
+      {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
       <div className="flex gap-2">
         <input
           type="text"
