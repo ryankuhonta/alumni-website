@@ -95,6 +95,7 @@ Returned columns:
 | `other_user_id`, `other_first_name`, `other_last_name`, `other_profile_picture` | other person | `NULL` |
 | `last_message_content`, `last_message_created_at`, `last_message_sender_id` | last message | last message |
 | `last_message_sender_first_name` | for `You:` logic | preview name (`Rey: …`) |
+| `last_message_is_own` | whether the viewer sent it | same |
 | `unread_count` | unchanged | unchanged |
 
 Join rules:
@@ -147,10 +148,11 @@ Returns no row when the caller is not a participant. Granted to `authenticated` 
 |---|---|---|
 | Avatar | blue circle with `2005` | initials (unchanged) |
 | Title | `Batch 2005` | other user's name |
-| Sub-line | `42 members` | last message preview |
-| Preview | `<First name>: …` or `You: …` | unchanged |
+| Sub-line | last message preview (`Rey: …` / `You: …`), or “No messages yet” | last message preview |
 | Badge | unread count | unread count |
 | Extra | `Pinned` pill | none |
+
+Member count is shown in the thread header, not in the inbox row (matches the approved mockup).
 
 Ordering comes from the RPC; no client-side sorting.
 
