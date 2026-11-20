@@ -13,6 +13,11 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
   const [users, setUsers] = useState(initialUsers)
   const [loading, setLoading] = useState<string | null>(null)
   const [confirmRole, setConfirmRole] = useState<{ userId: string; newRole: UserRole; userName: string } | null>(null)
+  const [editUser, setEditUser] = useState<User | null>(null)
+  const [editFirstName, setEditFirstName] = useState('')
+  const [editLastName, setEditLastName] = useState('')
+  const [editBatchYear, setEditBatchYear] = useState('')
+  const [editError, setEditError] = useState<string | null>(null)
 
   const updateStatus = async (userId: string, status: UserStatus) => {
     setLoading(userId)
@@ -80,6 +85,53 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
     setConfirmRole({ userId, newRole, userName })
   }
 
+  const openEdit = (user: User) => {
+    setEditUser(user)
+    setEditFirstName(user.first_name)
+    setEditLastName(user.last_name)
+    setEditBatchYear(String(user.batch_year))
+    setEditError(null)
+  }
+
+  const closeEdit = () => {
+    setEditUser(null)
+    setEditError(null)
+  }
+
+  const saveEdit = async () => {
+    if (!editUser) return
+
+    setLoading(editUser.id)
+    setEditError(null)
+
+    try {
+      const res = await fetch(`/api/admin/users/${editUser.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: editFirstName,
+          lastName: editLastName,
+          batchYear: Number(editBatchYear),
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setEditError(data.error || 'Failed to update user')
+        return
+      }
+
+      setUsers(users.map((u) => (u.id === editUser.id ? { ...u, ...data.user } : u)))
+      setEditUser(null)
+    } catch (error) {
+      console.error('Error updating user:', error)
+      setEditError('Failed to update user')
+    } finally {
+      setLoading(null)
+    }
+  }
+
   const statusColors: Record<UserStatus, string> = {
     approved: 'bg-blue-100 text-blue-800',
     pending: 'bg-yellow-100 text-yellow-800',
@@ -96,6 +148,66 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
 
   return (
     <div className="overflow-x-auto">
+      {/* Edit User Modal */}
+      {editUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-bold mb-4">Edit User</h3>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium mb-1">First name</label>
+                <input
+                  value={editFirstName}
+                  onChange={(e) => setEditFirstName(e.target.value)}
+                  className="w-full border rounded px-3 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Last name</label>
+                <input
+                  value={editLastName}
+                  onChange={(e) => setEditLastName(e.target.value)}
+                  className="w-full border rounded px-3 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Batch year</label>
+                <input
+                  type="number"
+                  value={editBatchYear}
+                  onChange={(e) => setEditBatchYear(e.target.value)}
+                  className="w-full border rounded px-3 py-2"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Use 0 for teachers. Changing this moves the user to that batch group automatically.
+                </p>
+              </div>
+            </div>
+
+            {editError && <p className="text-sm text-red-600 mt-3">{editError}</p>}
+
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={closeEdit}
+                className="px-4 py-2 border rounded hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveEdit}
+                disabled={loading === editUser.id}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              >
+                {loading === editUser.id ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Confirmation Modal */}
       {confirmRole && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -174,6 +286,13 @@ export default function UserTable({ users: initialUsers }: UserTableProps) {
                 </span>
               </td>
               <td className="p-3 space-x-2">
+                <button
+                  onClick={() => openEdit(user)}
+                  disabled={loading === user.id}
+                  className="text-gray-700 hover:underline"
+                >
+                  Edit
+                </button>
                 {user.status !== 'approved' && (
                   <button
                     onClick={() => updateStatus(user.id, 'approved')}
