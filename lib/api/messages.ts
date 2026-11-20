@@ -1,18 +1,37 @@
 import { createClient } from '@/lib/supabase/server'
-import { ConversationWithDetails, MessageWithSender } from '@/types/messaging'
+import { ConversationWithDetails, ConversationDetails, ConversationUser, MessageWithSender } from '@/types/messaging'
 
 interface ConversationRow {
   id: string
   created_at: string
   updated_at: string
-  other_user_id: string
-  other_first_name: string
-  other_last_name: string
+  conversation_type: 'direct' | 'batch'
+  batch_year: number | null
+  title: string | null
+  member_count: number | string | null
+  other_user_id: string | null
+  other_first_name: string | null
+  other_last_name: string | null
   other_profile_picture: string | null
-  last_message_content: string
-  last_message_created_at: string
-  last_message_sender_id: string
-  unread_count: number | string
+  last_message_content: string | null
+  last_message_created_at: string | null
+  last_message_sender_id: string | null
+  last_message_sender_first_name: string | null
+  last_message_is_own: boolean | null
+  unread_count: number | string | null
+}
+
+interface ConversationDetailsRow {
+  id: string
+  conversation_type: 'direct' | 'batch'
+  batch_year: number | null
+  title: string | null
+  member_count: number | string | null
+  other_user_id: string | null
+  other_first_name: string | null
+  other_last_name: string | null
+  other_profile_picture: string | null
+  viewer_id: string
 }
 
 interface SenderRow {
@@ -35,6 +54,22 @@ const MESSAGE_COLUMNS =
 
 const DEFAULT_PAGE_SIZE = 50
 const MAX_PAGE_SIZE = 100
+
+function mapOtherUser(row: {
+  other_user_id: string | null
+  other_first_name: string | null
+  other_last_name: string | null
+  other_profile_picture: string | null
+}): ConversationUser | null {
+  if (!row.other_user_id) return null
+
+  return {
+    id: row.other_user_id,
+    first_name: row.other_first_name ?? '',
+    last_name: row.other_last_name ?? '',
+    profile_picture: row.other_profile_picture,
+  }
+}
 
 function mapMessageRow(row: MessageRow, currentUserId: string): MessageWithSender {
   const sender = Array.isArray(row.sender) ? row.sender[0] : row.sender
@@ -103,8 +138,6 @@ export async function getConversations(): Promise<ConversationWithDetails[]> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
-  // Single round trip: other participant, last message and unread count are
-  // joined inside the database (migration 025).
   const { data, error } = await supabase.rpc('get_conversations')
 
   if (error) {
@@ -116,45 +149,55 @@ export async function getConversations(): Promise<ConversationWithDetails[]> {
     id: row.id,
     created_at: row.created_at,
     updated_at: row.updated_at,
-    otherUser: {
-      id: row.other_user_id,
-      first_name: row.other_first_name,
-      last_name: row.other_last_name,
-      profile_picture: row.other_profile_picture,
-    },
+    type: row.conversation_type,
+    batchYear: row.batch_year,
+    title: row.title,
+    memberCount: row.member_count === null || row.member_count === undefined ? null : Number(row.member_count),
+    otherUser: mapOtherUser(row),
     lastMessage: row.last_message_created_at
       ? {
-          content: row.last_message_content,
+          content: row.last_message_content ?? '',
           created_at: row.last_message_created_at,
-          sender_id: row.last_message_sender_id,
+          sender_id: row.last_message_sender_id ?? '',
+          senderFirstName: row.last_message_sender_first_name,
+          isOwn: Boolean(row.last_message_is_own),
         }
       : null,
     unreadCount: Number(row.unread_count ?? 0),
   }))
 }
 
+export async function getConversationDetails(conversationId: string): Promise<ConversationDetails | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('get_conversation', { p_conversation_id: conversationId })
+
+  if (error) {
+    console.error('get_conversation error:', JSON.stringify(error))
+    throw new Error(error.message || 'Failed to get conversation')
+  }
+
+  const row = (Array.isArray(data) ? data[0] : data) as ConversationDetailsRow | undefined
+  if (!row) return null
+
+  return {
+    id: row.id,
+    type: row.conversation_type,
+    batchYear: row.batch_year,
+    title: row.title,
+    memberCount: row.member_count === null || row.member_count === undefined ? null : Number(row.member_count),
+    otherUser: mapOtherUser(row),
+    viewerId: row.viewer_id,
+  }
+}
+
 export async function getMessages(
   conversationId: string,
+  viewerId: string,
   options?: { before?: string | null; limit?: number }
 ): Promise<{ messages: MessageWithSender[]; hasMore: boolean }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Not authenticated')
-
-  // Verify user is participant
-  const { data: participant } = await supabase
-    .from('conversation_participants')
-    .select('conversation_id')
-    .eq('conversation_id', conversationId)
-    .eq('user_id', user.id)
-    .single()
-
-  if (!participant) throw new Error('Not authorized')
-
   const limit = Math.min(Math.max(options?.limit ?? DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE)
 
-  // Newest page first so we can walk backwards with the keyset cursor, then
-  // reverse it for display. Fetch one extra row to know if more exist.
   let query = supabase
     .from('messages')
     .select(MESSAGE_COLUMNS)
@@ -179,7 +222,7 @@ export async function getMessages(
   const page = hasMore ? rows.slice(0, limit) : rows
 
   return {
-    messages: page.reverse().map((row) => mapMessageRow(row, user.id)),
+    messages: page.reverse().map((row) => mapMessageRow(row, viewerId)),
     hasMore,
   }
 }

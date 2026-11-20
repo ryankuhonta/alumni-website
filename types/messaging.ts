@@ -19,22 +19,40 @@ export interface Message {
   created_at: string
 }
 
+export interface ConversationUser {
+  id: string
+  first_name: string
+  last_name: string
+  profile_picture: string | null
+}
+
 export interface ConversationWithDetails {
   id: string
   created_at: string
   updated_at: string
-  otherUser: {
-    id: string
-    first_name: string
-    last_name: string
-    profile_picture: string | null
-  }
+  type: 'direct' | 'batch'
+  batchYear: number | null
+  title: string | null
+  memberCount: number | null
+  otherUser: ConversationUser | null
   lastMessage: {
     content: string
     created_at: string
     sender_id: string
+    senderFirstName: string | null
+    isOwn: boolean
   } | null
   unreadCount: number
+}
+
+export interface ConversationDetails {
+  id: string
+  type: 'direct' | 'batch'
+  batchYear: number | null
+  title: string | null
+  memberCount: number | null
+  otherUser: ConversationUser | null
+  viewerId: string
 }
 
 export interface MessageWithSender {
