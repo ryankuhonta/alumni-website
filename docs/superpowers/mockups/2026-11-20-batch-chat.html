@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Batch group chat — mockup</title>
+<style>
+  :root {
+    --primary: #1e40af;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-900: #111827;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px;
+    background: #eef1f6;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--gray-900);
+  }
+  h1.page-title { margin: 0 0 6px; font-size: 22px; }
+  p.page-sub { margin: 0 0 24px; color: var(--gray-500); font-size: 14px; }
+  .stage { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+  .screen { width: 520px; max-width: 100%; }
+  .caption { font-size: 13px; font-weight: 700; color: #334155; margin: 0 0 8px 2px; text-transform: uppercase; letter-spacing: .04em; }
+  .window {
+    background: #fff;
+    border: 1px solid #d6dbe4;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, .10);
+  }
+  .nav {
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+  }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 15px; }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.4);
+    display: grid; place-items: center; font-size: 11px; font-weight: 700;
+  }
+  .nav-links { display: flex; gap: 14px; margin-left: auto; font-size: 12px; opacity: .92; }
+  .nav-links span { position: relative; white-space: nowrap; }
+  .nav-links .active { font-weight: 700; opacity: 1; }
+  .nav-dot {
+    position: absolute; top: -7px; right: -10px;
+    background: #ef4444; color: #fff; font-size: 9px; font-weight: 700;
+    border-radius: 999px; padding: 1px 5px;
+  }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #dbeafe; color: var(--primary);
+    display: grid; place-items: center; font-size: 11px; font-weight: 700;
+    flex: 0 0 auto;
+  }
+  .body { padding: 22px 22px 26px; }
+  .body h2 { margin: 0 0 16px; font-size: 20px; }
+  .list { border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
+  .row { display: flex; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--gray-200); align-items: center; }
+  .row:last-child { border-bottom: 0; }
+  .row.pinned { background: #eff6ff; }
+  .row-main { flex: 1; min-width: 0; }
+  .row-top { display: flex; align-items: center; gap: 8px; }
+  .row-name { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-time { margin-left: auto; font-size: 11px; color: var(--gray-500); white-space: nowrap; }
+  .pill {
+    font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--primary); background: #dbeafe; border-radius: 999px; padding: 2px 7px;
+  }
+  .row-sub { font-size: 12px; color: var(--gray-500); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .unread {
+    background: #ef4444; color: #fff; font-size: 10px; font-weight: 700;
+    min-width: 19px; height: 19px; border-radius: 999px;
+    display: grid; place-items: center; padding: 0 5px; flex: 0 0 auto;
+  }
+  .group-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    display: grid; place-items: center; font-size: 12px; font-weight: 700;
+    flex: 0 0 auto;
+  }
+  .avatar-lg { width: 44px; height: 44px; font-size: 13px; }
+  .divider-label {
+    padding: 8px 16px; background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    font-size: 10px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--gray-500);
+  }
+
+  /* Thread screen */
+  .thread-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px; border-bottom: 1px solid var(--gray-200);
+  }
+  .back { font-size: 20px; color: var(--gray-500); line-height: 1; }
+  .thread-title { font-weight: 700; font-size: 15px; }
+  .thread-sub { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .thread-body {
+    height: 438px; overflow: hidden;
+    padding: 14px 16px 18px;
+    display: flex; flex-direction: column; gap: 12px;
+    background: #fff;
+  }
+  .load-older { text-align: center; font-size: 12px; color: var(--primary); font-weight: 700; padding: 2px 0 4px; }
+  .date-chip { align-self: center; font-size: 10px; font-weight: 700; color: var(--gray-500); background: var(--gray-100); border-radius: 999px; padding: 3px 10px; }
+  .msg { display: flex; flex-direction: column; max-width: 78%; }
+  .msg.in { align-self: flex-start; }
+  .msg.out { align-self: flex-end; align-items: flex-end; }
+  .sender { font-size: 11px; font-weight: 700; color: var(--gray-500); margin: 0 0 3px 3px; }
+  .bubble {
+    border-radius: 12px; padding: 8px 13px; font-size: 13px; line-height: 1.45;
+    background: var(--gray-100); color: var(--gray-900);
+    border-bottom-left-radius: 3px;
+  }
+  .msg.out .bubble { background: var(--primary); color: #fff; border-bottom-left-radius: 12px; border-bottom-right-radius: 3px; }
+  .bubble .stamp { display: block; font-size: 10px; margin-top: 3px; opacity: .65; }
+  .composer { display: flex; gap: 8px; padding: 14px 16px; border-top: 1px solid var(--gray-200); background: #fff; }
+  .composer input {
+    flex: 1; border: 1px solid #d1d5db; border-radius: 8px; padding: 9px 13px;
+    font-size: 13px; font-family: inherit; color: var(--gray-500);
+  }
+  .send {
+    background: var(--primary); color: #fff; border: 0; border-radius: 8px;
+    padding: 9px 16px; font-size: 13px; font-weight: 700; font-family: inherit;
+  }
+  .note { margin: 10px 2px 0; font-size: 12px; color: #475569; line-height: 1.5; }
+  .note b { color: #1e293b; }
+
+  /* Avatar option strip */
+  .options {
+    background: #fff; border: 1px solid #d6dbe4; border-radius: 12px;
+    padding: 18px 20px 20px; margin: 0 0 28px; box-shadow: 0 6px 18px rgba(15,23,42,.06);
+  }
+  .options h3 { margin: 0 0 14px; font-size: 15px; }
+  .option-row { display: flex; gap: 32px; flex-wrap: wrap; }
+  .option { width: 116px; text-align: center; }
+  .option .avatar-demo {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    display: grid; place-items: center; margin: 0 auto 9px;
+    font-size: 15px; font-weight: 700; letter-spacing: .02em;
+    position: relative;
+  }
+  .option .avatar-demo svg { width: 27px; height: 27px; display: block; }
+  .option .badge-year {
+    position: absolute; bottom: -2px; right: -6px;
+    background: #fff; color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 999px; font-size: 9px; font-weight: 700;
+    padding: 1px 4px; letter-spacing: 0;
+  }
+  .option .label { font-size: 11px; color: #475569; line-height: 1.35; }
+  .option .label b { display: block; color: #1e293b; font-size: 12px; margin-bottom: 2px; }
+  .option.recommended .avatar-demo { box-shadow: 0 0 0 4px #dbeafe; }
+  .option .reco {
+    display: inline-block; margin-top: 5px; font-size: 9px; font-weight: 700;
+    color: var(--primary); background: #dbeafe; border-radius: 999px; padding: 2px 7px;
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+</style>
+</head>
+<body>
+  <h1 class="page-title">Batch group chat — UI mockup</h1>
+  <p class="page-sub">Approach A · pinned batch group in the same inbox · sender names inside group threads</p>
+
+  <div class="options">
+    <h3>Batch avatar — options</h3>
+    <div class="option-row">
+      <div class="option recommended">
+        <div class="avatar-demo">2005</div>
+        <div class="label"><b>Full batch year</b>Pinaka-malinaw; walang mali sa taon.</div>
+        <span class="reco">Recommended</span>
+      </div>
+
+      <div class="option">
+        <div class="avatar-demo">’05</div>
+        <div class="label"><b>Short year</b>Mas malaki ang text, pero puwedeng malito sa dekada.</div>
+      </div>
+
+      <div class="option">
+        <div class="avatar-demo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 10L12 5 2 10l10 5 10-5z"/>
+            <path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/>
+          </svg>
+        </div>
+        <div class="label"><b>Grad cap icon</b>Malinaw na “group,” pero walang batch identity.</div>
+      </div>
+
+      <div class="option">
+        <div class="avatar-demo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 10L12 5 2 10l10 5 10-5z"/>
+            <path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/>
+          </svg>
+          <span class="badge-year">05</span>
+        </div>
+        <div class="label"><b>Cap + year badge</b>Pinaka-may dating, pero masikip sa 38px header.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <!-- INBOX -->
+    <div class="screen">
+      <p class="caption">1 · Inbox</p>
+      <div class="window">
+        <div class="nav">
+          <div class="brand"><span class="brand-mark">LDSP</span> LDSP Alumni</div>
+          <div class="nav-links">
+            <span>Directory</span>
+            <span>Events</span>
+            <span>Announcements</span>
+            <span>Jobs</span>
+            <span class="active">Messages<span class="nav-dot">3</span></span>
+            <span class="avatar" style="background:rgba(255,255,255,.2);color:#fff">RK</span>
+          </div>
+        </div>
+
+        <div class="body">
+          <h2>Messages</h2>
+          <div class="list">
+            <div class="row pinned">
+              <div class="group-avatar">B2005</div>
+              <div class="row-main">
+                <div class="row-top">
+                  <span class="row-name">Batch 2005</span>
+                  <span class="pill">Pinned</span>
+                  <span class="row-time">9:42 AM</span>
+                </div>
+                <div class="row-sub">Rey: Tapos na ba ang t-shirt design?</div>
+              </div>
+              <span class="unread">3</span>
+            </div>
+
+            <div class="divider-label">Direct messages</div>
+
+            <div class="row">
+              <div class="avatar avatar-lg">MS</div>
+              <div class="row-main">
+                <div class="row-top">
+                  <span class="row-name">Maria Santos</span>
+                  <span class="row-time">Yesterday</span>
+                </div>
+                <div class="row-sub">You: See you sa reunion!</div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="avatar avatar-lg">JD</div>
+              <div class="row-main">
+                <div class="row-top">
+                  <span class="row-name">Juan Dela Cruz</span>
+                  <span class="row-time">Tue</span>
+                </div>
+                <div class="row-sub">Sige, salamat!</div>
+              </div>
+              <span class="unread">2</span>
+            </div>
+
+            <div class="row">
+              <div class="avatar avatar-lg">AR</div>
+              <div class="row-main">
+                <div class="row-top">
+                  <span class="row-name">Ana Reyes</span>
+                  <span class="row-time">Mon</span>
+                </div>
+                <div class="row-sub">Sent you the photos from the homecoming.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="note"><b>Bago:</b> naka-pin sa taas ang batch group, may member count sa thread header, at “Rey:” prefix sa preview. Ang mga 1:1 ay nananatiling normal sa ibaba.</p>
+    </div>
+
+    <!-- THREAD -->
+    <div class="screen">
+      <p class="caption">2 · Batch thread</p>
+      <div class="window">
+        <div class="nav">
+          <div class="brand"><span class="brand-mark">LDSP</span> LDSP Alumni</div>
+          <div class="nav-links">
+            <span>Directory</span>
+            <span>Events</span>
+            <span>Announcements</span>
+            <span>Jobs</span>
+            <span class="active">Messages<span class="nav-dot">3</span></span>
+            <span class="avatar" style="background:rgba(255,255,255,.2);color:#fff">RK</span>
+          </div>
+        </div>
+
+        <div class="thread-head">
+          <span class="back">‹</span>
+          <div class="group-avatar" style="width:38px;height:38px;font-size:11px">B2005</div>
+          <div>
+            <div class="thread-title">Batch 2005</div>
+            <div class="thread-sub">42 members</div>
+          </div>
+        </div>
+
+        <div class="thread-body">
+          <div class="load-older">Load older messages</div>
+          <div class="date-chip">Today</div>
+
+          <div class="msg in">
+            <span class="sender">Rey Kuhonta</span>
+            <div class="bubble">Good morning batch! Reminder: reunion meeting later at 8pm.<span class="stamp">8:15 AM</span></div>
+          </div>
+
+          <div class="msg in">
+            <span class="sender">Maria Santos</span>
+            <div class="bubble">Noted! May Zoom link ba?<span class="stamp">8:22 AM</span></div>
+          </div>
+
+          <div class="msg out">
+            <div class="bubble">Sige, I’ll be there. Paki-post na lang ang link.<span class="stamp">8:31 AM</span></div>
+          </div>
+
+          <div class="msg in">
+            <span class="sender">Rey Kuhonta</span>
+            <div class="bubble">Meron! I’ll post it here before 7pm.<span class="stamp">8:40 AM</span></div>
+          </div>
+
+          <div class="msg in">
+            <span class="sender">Carlo Mendoza</span>
+            <div class="bubble">Pwede bang magdala ng +1 sa meeting?<span class="stamp">9:05 AM</span></div>
+          </div>
+
+          <div class="msg out">
+            <div class="bubble">Paki-share na lang ang link pag ready na. Thanks!<span class="stamp">9:42 AM</span></div>
+          </div>
+        </div>
+
+        <div class="composer">
+          <input value="" placeholder="Type a message..." />
+          <button class="send">Send</button>
+        </div>
+      </div>
+      <p class="note"><b>Bago:</b> may header na “Batch 2005 · 42 members”, pangalan ng sender sa bawat incoming message, at gumagana pa rin ang “Load older messages” na may scroll anchoring.</p>
+    </div>
+  </div>
+</body>
+</html>
