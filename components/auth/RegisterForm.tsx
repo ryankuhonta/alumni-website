@@ -194,7 +194,7 @@ export default function RegisterForm() {
             value={batchYear}
             onChange={(e) => setBatchYear(e.target.value)}
             required
-            min="1990"
+            min="1970"
             max={new Date().getFullYear().toString()}
             className="w-full border rounded px-3 py-2"
           />
