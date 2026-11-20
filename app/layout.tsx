@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import InstallBanner from "@/components/pwa/InstallBanner";
 import { createClient } from "@/lib/supabase/server";
 
 const geistSans = Geist({
@@ -111,6 +112,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <Footer siteName={siteName} />
         </div>
         <Analytics />
+        <InstallBanner />
       </body>
     </html>
   );

@@ -1,16 +1,23 @@
 {
   "name": "LDSP Alumni Association Inc.",
   "short_name": "LDSP Alumni",
+  "description": "The official app of the Liceo de San Pedro Alumni Association: batch group chats, directory, events, announcements and job postings.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "lang": "en",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "theme_color": "#1e40af",
