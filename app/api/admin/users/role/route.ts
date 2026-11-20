@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { logActivity } from '@/lib/activity-log'
+import { logActivityServer } from '@/lib/activity-log-server'
 
 export async function POST(request: Request) {
   try {
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     }
 
     // Log the activity
-    await logActivity({
+    await logActivityServer({
       action: 'user.role_changed',
       targetType: 'user',
       targetId: userId,
@@ -64,8 +64,9 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error) {
     console.error('Role update error:', error)
-    return NextResponse.json({ error: error.message || 'Failed to update role' }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Failed to update role'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

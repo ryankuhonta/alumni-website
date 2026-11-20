@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { logActivity } from '@/lib/activity-log'
+import { logActivityServer } from '@/lib/activity-log-server'
 
 const MIN_BATCH_YEAR = 1970
 
@@ -88,7 +88,7 @@ export async function PATCH(
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    await logActivity({
+    await logActivityServer({
       action: 'user.details_updated',
       targetType: 'user',
       targetId: id,
