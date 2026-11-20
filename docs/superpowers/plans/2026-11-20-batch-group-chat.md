@@ -112,6 +112,9 @@ BEGIN
 END;
 $$;
 
+-- Anon must not create conversations: user_id is nullable on participants, so
+-- an anon call would otherwise insert participant rows with user_id = NULL.
+REVOKE ALL ON FUNCTION alumni_v2.create_conversation(UUID) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION alumni_v2.create_conversation(UUID) TO authenticated;
 
 -- 3. Inbox RPC -------------------------------------------------------------
@@ -194,6 +197,7 @@ AS $$
   ) unread ON true
   WHERE me.user_id = auth.uid()
     AND (c.type = 'batch' OR last_message.sender_id IS NOT NULL)
+    AND (c.type = 'batch' OR other_user.id IS NOT NULL)
   ORDER BY (c.type = 'batch') DESC, c.updated_at DESC;
 $$;
 

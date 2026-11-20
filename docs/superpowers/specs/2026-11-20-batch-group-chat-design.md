@@ -101,6 +101,7 @@ Returned columns:
 Join rules:
 
 - `other_user` — `LEFT JOIN LATERAL`; required only for direct
+- Direct rows whose counterpart participant no longer exists are skipped in `WHERE` (matching migration 025), so the inbox never returns a direct row with a null `otherUser`
 - `last_message` — `LEFT JOIN LATERAL`; direct rows with no messages are still skipped in `WHERE`, batch rows are kept so an empty group is visible
 - `member_count` — `LEFT JOIN LATERAL` aggregate, evaluated only for batch rows
 - Order: `ORDER BY (c.type = 'batch') DESC, c.updated_at DESC`
@@ -176,6 +177,7 @@ Ordering comes from the RPC; no client-side sorting.
 - Messaging RLS stays participant-based (migration 026); no new tables means no new policy surface
 - The membership trigger is `SECURITY DEFINER` with `SET search_path = alumni_v2, pg_temp`
 - `get_conversations`, `get_conversation`, and `get_unread_message_count` are `SECURITY DEFINER` and filter by `auth.uid()`; anon is denied EXECUTE
+- `create_conversation` is re-created with `REVOKE ALL ... FROM PUBLIC, anon` — `conversation_participants.user_id` is nullable, so an anon call could otherwise create participant rows with a `NULL` user
 - Batch history is visible to batch members only; the details RPC returns nothing for non-participants
 
 ## Rollout
