@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -41,6 +42,7 @@ function isDismissed() {
 }
 
 export default function InstallBanner() {
+  const pathname = usePathname()
   const [visible, setVisible] = useState(false)
   const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null)
   const [ios] = useState(() => isIos())
@@ -105,6 +107,9 @@ export default function InstallBanner() {
   }
 
   if (!visible) return null
+
+  // The chat composer sits at the bottom of the thread screen; don't cover it.
+  if (/^\/messages\/[^/]+$/.test(pathname)) return null
 
   return (
     <div
